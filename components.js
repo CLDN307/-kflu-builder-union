@@ -74,7 +74,6 @@ class KfluNavbar extends HTMLElement {
             if (user) {
                 authButtons.classList.add('hidden');
                 userInfoNav.classList.remove('hidden');
-                // '회원님' 대신 실제 이름을 표시 (displayName이 없으면 이메일 앞부분 활용)
                 const displayName = user.displayName || user.email.split('@')[0];
                 navUserName.textContent = displayName + '님';
             } else {
@@ -97,7 +96,6 @@ class KfluNavbar extends HTMLElement {
 class KfluAuthModals extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
-            <!-- 로그인 모달 -->
             <div id="login-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="login-modal-title" role="dialog" aria-modal="true">
                 <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                     <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true" onclick="closeModal('login-modal')"></div>
@@ -135,7 +133,6 @@ class KfluAuthModals extends HTMLElement {
                 </div>
             </div>
 
-            <!-- 회원가입 모달 -->
             <div id="register-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="register-modal-title" role="dialog" aria-modal="true">
                 <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                     <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true" onclick="closeModal('register-modal')"></div>
@@ -250,7 +247,6 @@ class KfluAuthModals extends HTMLElement {
     }
 }
 
-// Global modal control functions
 window.openModal = function(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
@@ -267,7 +263,6 @@ window.closeModal = function(modalId) {
     }
 }
 
-// Esc key to close modals
 window.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         document.querySelectorAll('[role="dialog"]').forEach(modal => {

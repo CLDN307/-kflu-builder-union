@@ -6,6 +6,7 @@
     <title>활동 게시판 | 경기남부본부</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
         body { font-family: 'Noto Sans KR', sans-serif; }
@@ -40,7 +41,6 @@
                         </tr>
                     </thead>
                     <tbody id="post-list" class="divide-y divide-slate-50">
-                        <!-- 데이터 로딩 중 -->
                         <tr>
                             <td colspan="5" class="px-6 py-10 text-center text-slate-400">게시글을 불러오는 중입니다...</td>
                         </tr>
@@ -54,7 +54,6 @@
         </div>
     </section>
 
-    <!-- 글쓰기/수정 모달 -->
     <div id="post-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-center justify-center min-h-screen px-4">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closePostModal()"></div>
@@ -82,21 +81,19 @@
     <kflu-footer></kflu-footer>
     <kflu-auth-modals></kflu-auth-modals>
 
+    <script type="module" src="components.js"></script>
     <script type="module">
         import { 
             auth, db, onAuthStateChanged, collection, addDoc, getDocs, query, orderBy, doc, deleteDoc, updateDoc, getDoc 
         } from './main.js';
-        import './components.js';
 
         let currentUser = null;
 
-        // 인증 상태 감시
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             loadPosts();
         });
 
-        // 게시글 로드
         async function loadPosts() {
             const postList = document.getElementById('post-list');
             try {
@@ -121,12 +118,12 @@
                     tr.innerHTML = `
                         <td class="px-6 py-5 text-center text-slate-500">${index--}</td>
                         <td class="px-6 py-5 font-bold text-slate-800">${data.title}</td>
-                        <td class="px-6 py-5 text-center text-sm text-slate-500">${data.authorName}</td>
+                        <td class="px-6 py-5 text-center text-sm text-slate-500">${data.authorName || '익명'}</td>
                         <td class="px-6 py-5 text-center text-sm text-slate-400">${date}</td>
                         <td class="px-6 py-5 text-center">
                             ${isAuthor ? `
-                                <button onclick="editPost('${docSnap.id}')" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="deletePost('${docSnap.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="window.editPost('${docSnap.id}')" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="window.deletePost('${docSnap.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
                             ` : '-'}
                         </td>
                     `;
@@ -138,19 +135,18 @@
             }
         }
 
-        // 글쓰기 버튼 클릭
         document.getElementById('write-btn').onclick = () => {
             if (!currentUser) {
                 alert('로그인이 필요한 서비스입니다.');
+                if (window.openModal) window.openModal('login-modal');
                 return;
             }
             document.getElementById('modal-title').textContent = '새 게시글 작성';
             document.getElementById('post-form').reset();
             document.getElementById('post-id').value = '';
-            openPostModal();
+            window.openPostModal();
         };
 
-        // 모달 열기/닫기
         window.openPostModal = () => {
             document.getElementById('post-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -161,7 +157,6 @@
             document.body.style.overflow = 'auto';
         };
 
-        // 게시글 저장 (생성/수정)
         document.getElementById('post-form').onsubmit = async (e) => {
             e.preventDefault();
             if (!currentUser) return;
@@ -172,16 +167,13 @@
 
             try {
                 if (id) {
-                    // 수정
-                    const postRef = doc(db, "posts", id);
-                    await updateDoc(postRef, {
+                    await updateDoc(doc(db, "posts", id), {
                         title,
                         content,
                         updatedAt: new Date()
                     });
                     alert('수정되었습니다.');
                 } else {
-                    // 생성 - 실명 반영 (displayName이 없으면 이메일 활용)
                     const authorName = currentUser.displayName || currentUser.email.split('@')[0];
                     await addDoc(collection(db, "posts"), {
                         title,
@@ -192,32 +184,29 @@
                     });
                     alert('등록되었습니다.');
                 }
-                closePostModal();
+                window.closePostModal();
                 loadPosts();
             } catch (error) {
                 alert('저장 실패: ' + error.message);
             }
         };
 
-        // 수정 버튼 클릭
         window.editPost = async (id) => {
             try {
-                const docRef = doc(db, "posts", id);
-                const docSnap = await getDoc(docRef);
+                const docSnap = await getDoc(doc(db, "posts", id));
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     document.getElementById('modal-title').textContent = '게시글 수정';
                     document.getElementById('post-id').value = id;
                     document.getElementById('post-title').value = data.title;
                     document.getElementById('post-content').value = data.content;
-                    openPostModal();
+                    window.openPostModal();
                 }
             } catch (error) {
                 alert('불러오기 실패: ' + error.message);
             }
         };
 
-        // 삭제 버튼 클릭
         window.deletePost = async (id) => {
             if (confirm('정말 삭제하시겠습니까?')) {
                 try {
