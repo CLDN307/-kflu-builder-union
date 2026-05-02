@@ -227,7 +227,21 @@ class KfluAuthModals extends HTMLElement {
                         location.reload();
                     })
                     .catch((error) => {
-                        alert('회원가입 실패: ' + error.message);
+                        let message = '회원가입 실패: ';
+                        switch (error.code) {
+                            case 'auth/email-already-in-use':
+                                message += '이미 가입된 이메일입니다. 다른 이메일을 사용하거나 로그인해 주세요.';
+                                break;
+                            case 'auth/invalid-email':
+                                message += '유효하지 않은 이메일 형식입니다.';
+                                break;
+                            case 'auth/weak-password':
+                                message += '비밀번호가 너무 취약합니다. 6자 이상의 비밀번호를 입력하세요.';
+                                break;
+                            default:
+                                message += error.message;
+                        }
+                        alert(message);
                     });
             });
         }
