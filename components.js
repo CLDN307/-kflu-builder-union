@@ -74,8 +74,8 @@ class KfluNavbar extends HTMLElement {
             if (user) {
                 authButtons.classList.add('hidden');
                 userInfoNav.classList.remove('hidden');
-                // '회원님' 대신 실제 이름을 표시
-                const displayName = user.displayName || '회원';
+                // '회원님' 대신 실제 이름을 표시 (displayName이 없으면 이메일 앞부분 활용)
+                const displayName = user.displayName || user.email.split('@')[0];
                 navUserName.textContent = displayName + '님';
             } else {
                 authButtons.classList.remove('hidden');
