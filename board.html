@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>활동 게시판 | 경기남부본부</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    
+    <kflu-navbar></kflu-navbar>
+
+    <div class="bg-blue-900 pt-40 pb-20 px-6 text-center text-white">
+        <h1 class="text-4xl font-black mb-4 tracking-tight text-white">활동 소식 및 게시판</h1>
+        <p class="opacity-70 font-light">경기남부 건설 현장의 투쟁 기록과 소식을 공유합니다.</p>
+    </div>
+
+    <section class="py-16 px-6 -mt-10">
+        <div class="max-w-7xl mx-auto bg-white rounded-[2rem] shadow-xl overflow-hidden p-8">
+            <div class="flex flex-col md:flex-row justify-between mb-8 gap-4">
+                <div class="flex gap-2">
+                    <button class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold">전체</button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b-2 border-slate-100 text-slate-400 text-xs font-black uppercase tracking-widest">
+                            <th class="px-6 py-4 w-20 text-center">번호</th>
+                            <th class="px-6 py-4">제목</th>
+                            <th class="px-6 py-4 w-32 text-center">작성자</th>
+                            <th class="px-6 py-4 w-32 text-center">날짜</th>
+                            <th class="px-6 py-4 w-40 text-center">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="post-list" class="divide-y divide-slate-50">
+                        <!-- 데이터 로딩 중 -->
+                        <tr>
+                            <td colspan="5" class="px-6 py-10 text-center text-slate-400">게시글을 불러오는 중입니다...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-10 flex justify-center">
+                <button id="write-btn" class="bg-slate-900 text-white px-10 py-3 rounded-xl font-bold hover:shadow-lg transition">글쓰기</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 글쓰기/수정 모달 -->
+    <div id="post-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closePostModal()"></div>
+            <div class="relative bg-white rounded-2xl overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full p-8">
+                <h3 class="text-2xl font-bold mb-6" id="modal-title">새 게시글 작성</h3>
+                <form id="post-form" class="space-y-4">
+                    <input type="hidden" id="post-id">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">제목</label>
+                        <input type="text" id="post-title" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="제목을 입력하세요">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">내용</label>
+                        <textarea id="post-content" required class="w-full px-4 py-2 border rounded-xl h-48 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="내용을 입력하세요"></textarea>
+                    </div>
+                    <div class="flex gap-4 mt-6">
+                        <button type="button" onclick="closePostModal()" class="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition">취소</button>
+                        <button type="submit" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">저장하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <kflu-footer></kflu-footer>
+
+    <script type="module">
+        import { 
+            auth, db, onAuthStateChanged, collection, addDoc, getDocs, query, orderBy, doc, deleteDoc, updateDoc, getDoc 
+        } from './main.js';
+        import './components.js';
+
+        let currentUser = null;
+
+        // 인증 상태 감시
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            loadPosts();
+        });
+
+        // 게시글 로드
+        async function loadPosts() {
+            const postList = document.getElementById('post-list');
+            try {
+                const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                postList.innerHTML = '';
+                
+                if (querySnapshot.empty) {
+                    postList.innerHTML = '<tr><td colspan="5" class="px-6 py-10 text-center text-slate-400">등록된 게시글이 없습니다.</td></tr>';
+                    return;
+                }
+
+                let index = querySnapshot.size;
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : '-';
+                    const isAuthor = currentUser && currentUser.uid === data.authorId;
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-blue-50 transition cursor-pointer';
+                    tr.innerHTML = `
+                        <td class="px-6 py-5 text-center text-slate-500">${index--}</td>
+                        <td class="px-6 py-5 font-bold text-slate-800">${data.title}</td>
+                        <td class="px-6 py-5 text-center text-sm text-slate-500">${data.authorName}</td>
+                        <td class="px-6 py-5 text-center text-sm text-slate-400">${date}</td>
+                        <td class="px-6 py-5 text-center">
+                            ${isAuthor ? `
+                                <button onclick="editPost('${docSnap.id}')" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deletePost('${docSnap.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                            ` : '-'}
+                        </td>
+                    `;
+                    postList.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Error loading posts: ", error);
+                postList.innerHTML = '<tr><td colspan="5" class="px-6 py-10 text-center text-red-400">데이터를 불러오는데 실패했습니다.</td></tr>';
+            }
+        }
+
+        // 글쓰기 버튼 클릭
+        document.getElementById('write-btn').onclick = () => {
+            if (!currentUser) {
+                alert('로그인이 필요한 서비스입니다.');
+                return;
+            }
+            document.getElementById('modal-title').textContent = '새 게시글 작성';
+            document.getElementById('post-form').reset();
+            document.getElementById('post-id').value = '';
+            openPostModal();
+        };
+
+        // 모달 열기/닫기
+        window.openPostModal = () => {
+            document.getElementById('post-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closePostModal = () => {
+            document.getElementById('post-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        };
+
+        // 게시글 저장 (생성/수정)
+        document.getElementById('post-form').onsubmit = async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const id = document.getElementById('post-id').value;
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+
+            try {
+                if (id) {
+                    // 수정
+                    const postRef = doc(db, "posts", id);
+                    await updateDoc(postRef, {
+                        title,
+                        content,
+                        updatedAt: new Date()
+                    });
+                    alert('수정되었습니다.');
+                } else {
+                    // 생성
+                    await addDoc(collection(db, "posts"), {
+                        title,
+                        content,
+                        authorId: currentUser.uid,
+                        authorName: currentUser.displayName || '익명',
+                        createdAt: new Date()
+                    });
+                    alert('등록되었습니다.');
+                }
+                closePostModal();
+                loadPosts();
+            } catch (error) {
+                alert('저장 실패: ' + error.message);
+            }
+        };
+
+        // 수정 버튼 클릭
+        window.editPost = async (id) => {
+            try {
+                const docRef = doc(db, "posts", id);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('modal-title').textContent = '게시글 수정';
+                    document.getElementById('post-id').value = id;
+                    document.getElementById('post-title').value = data.title;
+                    document.getElementById('post-content').value = data.content;
+                    openPostModal();
+                }
+            } catch (error) {
+                alert('불러오기 실패: ' + error.message);
+            }
+        };
+
+        // 삭제 버튼 클릭
+        window.deletePost = async (id) => {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                try {
+                    await deleteDoc(doc(db, "posts", id));
+                    alert('삭제되었습니다.');
+                    loadPosts();
+                } catch (error) {
+                    alert('삭제 실패: ' + error.message);
+                }
+            }
+        };
+    </script>
+</body>
+</html>

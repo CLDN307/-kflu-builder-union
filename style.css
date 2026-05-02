@@ -1,1 +1,61 @@
-/* Add styles here */
+
+/* Modern CSS (Baseline) for KFLU Builder Union */
+
+@layer base, theme, components, utilities;
+
+@layer base {
+    :root {
+        --primary-color: #2563eb; /* blue-600 */
+        --primary-hover: #1d4ed8; /* blue-700 */
+        --secondary-color: #ef4444; /* red-500 */
+        --text-main: #1f2937; /* gray-800 */
+        --text-muted: #6b7280; /* gray-500 */
+        --bg-main: #f9fafb; /* gray-50 */
+        --font-main: 'Noto Sans KR', sans-serif;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: var(--font-main);
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        margin: 0;
+    }
+}
+
+@layer components {
+    .hero-gradient {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('대문.jpg');
+        background-size: cover;
+        background-position: center;
+    }
+
+    /* Web Component Styles (if needed globally) */
+    kflu-navbar nav.nav-scrolled {
+        background-color: white !important;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        color: #111827 !important;
+    }
+
+    /* Interactive Elements glow effect as per GEMINI.md */
+    button:not(.bg-transparent):hover {
+        box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+    }
+
+    /* Cards with deep shadows as per GEMINI.md */
+    .card-lifted {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .card-lifted:hover {
+        transform: translateY(-5px);
+    }
+}

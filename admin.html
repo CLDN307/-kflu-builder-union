@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 모드 | 경기남부본부</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-900 text-white font-sans">
+    <div class="max-w-6xl mx-auto py-12 px-6">
+        <div class="flex justify-between items-center mb-10 border-b border-gray-700 pb-6">
+            <h1 class="text-3xl font-black tracking-tight">시스템 관리자 전용</h1>
+            <a href="index.html" class="text-sm bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition">사이트로 돌아가기</a>
+        </div>
+
+        <div id="admin-content" class="hidden">
+            <h2 class="text-xl font-bold mb-6 text-blue-400">전체 게시글 통합 관리</h2>
+            <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-700 text-gray-300 text-xs uppercase font-bold">
+                        <tr>
+                            <th class="px-6 py-4">제목</th>
+                            <th class="px-6 py-4">작성자</th>
+                            <th class="px-6 py-4">날짜</th>
+                            <th class="px-6 py-4 text-center">작업</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-posts" class="divide-y divide-gray-700">
+                        <!-- 데이터 로드 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="auth-check" class="flex flex-col items-center justify-center py-20 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+            <p id="auth-status" class="text-gray-400">관리자 권한을 확인하고 있습니다...</p>
+        </div>
+    </div>
+
+    <kflu-footer></kflu-footer>
+
+    <script type="module">
+        import { 
+            auth, db, onAuthStateChanged, collection, getDocs, deleteDoc, doc, query, orderBy 
+        } from './main.js';
+        import './components.js';
+
+        const ADMIN_EMAIL = "admin@admin.com"; // 관리자 계정 이메일 설정
+
+        onAuthStateChanged(auth, async (user) => {
+            const adminContent = document.getElementById('admin-content');
+            const authCheck = document.getElementById('auth-check');
+            const authStatus = document.getElementById('auth-status');
+
+            if (user && user.email === ADMIN_EMAIL) {
+                adminContent.classList.remove('hidden');
+                authCheck.classList.add('hidden');
+                loadAllPosts();
+            } else {
+                authStatus.textContent = "접근 권한이 없습니다. 관리자 계정으로 로그인해 주세요.";
+                authStatus.classList.add('text-red-500');
+                document.querySelector('.animate-spin').classList.add('hidden');
+            }
+        });
+
+        async function loadAllPosts() {
+            const container = document.getElementById('admin-posts');
+            try {
+                const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+                const snap = await getDocs(q);
+                
+                container.innerHTML = '';
+                
+                if (snap.empty) {
+                    container.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500">관리할 게시글이 없습니다.</td></tr>';
+                    return;
+                }
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : '-';
+                    
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-750 transition";
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 font-medium">${data.title}</td>
+                        <td class="px-6 py-4 text-sm text-gray-400">${data.authorName}</td>
+                        <td class="px-6 py-4 text-sm text-gray-400">${date}</td>
+                        <td class="px-6 py-4 text-center">
+                            <button onclick="confirmDelete('${d.id}')" class="bg-red-900/30 text-red-400 hover:bg-red-900/50 px-3 py-1 rounded transition text-xs border border-red-900/50">삭제</button>
+                        </td>
+                    `;
+                    container.appendChild(tr);
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        window.confirmDelete = async (id) => {
+            if (confirm('관리자 권한으로 이 글을 삭제하시겠습니까?')) {
+                await deleteDoc(doc(db, "posts", id));
+                loadAllPosts();
+            }
+        }
+    </script>
+</body>
+</html>

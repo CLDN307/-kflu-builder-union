@@ -1,14 +1,389 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="naver-site-verification" content="1f4b677320e84880ab2bb385b088dd477f2254a4" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="한국노총 전국공공산업노동조합 경기남부본부 공식 홈페이지. 상담, 가입, 활동현황 안내">
+    <meta name="keywords" content="노동조합, 건설노조, 한국노총, 경기남부본부, 노동자 권익">
+    <meta name="author" content="경기남부본부">
+
+    <meta property="og:title" content="한국노총 전국공공산업노동조합 경기남부본부">
+    <meta property="og:description" content="건설노동자의 권익 보호와 고용 안정을 위해 함께합니다.">
+    <meta property="og:image" content="https://너의도메인/대문.jpg">
+    <meta property="og:type" content="website">
+    <title>한국노총 전국공공노동조합연맹 건설노조 경기남부본부</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+<body class="bg-gray-50 text-gray-800">
+
+    <kflu-navbar></kflu-navbar>
+
+    <section id="home" class="hero-gradient h-screen flex items-center justify-center text-center text-white px-4">
+        <div class="max-w-4xl">
+            <h2 class="text-xl md:text-2xl font-light mb-4 tracking-widest">한국노총 전국공공산업노동조합</h2>
+            <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight">건설산업분과<br><span class="text-blue-400">경기남부본부</span></h1>
+            <p class="text-lg md:text-xl font-light mb-8 opacity-90">건설노동자의 권익 보호와 고용 안정을 위해 앞장서겠습니다.</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#about" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md font-bold transition">상세보기</a>
+                <a href="#contact" class="bg-white hover:bg-gray-100 text-blue-900 px-8 py-3 rounded-md font-bold transition">문의하기</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-20 px-6">
+    <section id="message" class="py-20 px-6 bg-white">
+    <div class="max-w-5xl mx-auto">
+        <h2 class="text-3xl font-bold mb-10 text-center">본부장 인사말</h2>
+        <div class="text-gray-700 leading-relaxed space-y-6 text-lg">
+            <p>
+                존경하는 조합원 여러분, 그리고 건설 현장에서 묵묵히 땀 흘리고 계신 모든 노동자 여러분께 깊은 인사를 드립니다.
+            </p>
+            <p>
+                한국노총 전국공공산업노동조합 경기남부본부는 그동안 수많은 어려움 속에서도 노동자의 권익을 지키기 위해 쉼 없이 달려왔습니다.
+                우리는 단순히 임금과 처우 개선을 넘어서, 노동자의 존엄성과 삶의 질을 지키는 것을 가장 중요한 가치로 삼고 있습니다.
+            </p>
+            <p>
+                건설 현장은 여전히 위험과 불안정 속에 놓여 있으며, 부당한 대우와 불합리한 구조가 남아 있습니다.
+                이러한 현실 속에서 우리 노동조합은 조합원 한 분 한 분의 목소리를 모아 더 강한 연대와 실질적인 변화를 만들어가고 있습니다.
+            </p>
+            <p>
+                우리는 현장의 문제를 외면하지 않습니다.
+                직접 듣고, 함께 고민하고, 끝까지 해결하는 조직이 되겠습니다.
+                또한, 미래 세대의 노동 환경까지 책임지는 지속 가능한 노동 운동을 실현하겠습니다.
+            </p>
+            <p>
+                여러분의 참여와 연대가 곧 힘입니다.
+                혼자가 아닌 함께일 때 우리는 더욱 강해집니다.
+            </p>
+            <p class="font-bold text-blue-600">
+                앞으로도 경기남부본부는 조합원의 권익 보호와 공정한 노동 환경을 위해 가장 앞장서겠습니다.
+            </p>
+            <p class="text-right mt-10">
+                   한국노총 전국공공산업노동조합 경기남부본부장
+            </p>
+        </div>
+    </div>
+</section>
+
+<section id="organization" class="py-20 px-6 bg-gray-100">
+    <div class="max-w-6xl mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-10">조직도</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow">
+                <h3 class="font-bold text-xl mb-2">본부장</h3>
+                <p>본부조직 총괄 및 운영</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+                <h3 class="font-bold text-xl mb-2">사무국</h3>
+                <p>행정 및 조합원 관리</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+                <h3 class="font-bold text-xl mb-2">현장 조직팀</h3>
+                <p>현장 대응 및 권익 보호</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-blue-600 font-bold tracking-widest uppercase">Greetings</span>
+                    <h2 class="text-3xl font-bold mt-2 mb-6">노동의 가치가 존중받는 세상을 위하여</h2>
+                    <p class="text-gray-600 leading-relaxed mb-6">
+                        반갑습니다. 한국노총 전국공공산업노동조합 건설산업분과 경기남부본부입니다. <br><br>
+                        우리 본부는 경기남부 지역 건설 현장의 열악한 노동 환경을 개선하고, 조합원들의 정당한 권리를 확보하기 위해 투쟁하고 있습니다. 우리는 하나된 힘으로 건설 노동자의 자부심을 지키고, 안전한 일터를 만들기 위해 멈추지 않고 전진할 것입니다.
+                    </p>
+                    <div class="border-l-4 border-blue-600 pl-6 py-2 italic font-medium text-lg">
+                        "함께하면 강합니다. 투쟁으로 쟁취합시다!"
+                    </div>
+                </div>
+                <div class="rounded-xl overflow-hidden shadow-2xl">
+                    <img src="단체.jpg" alt="경기남부본부 단체사진" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="py-20 bg-gray-100 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">주요 활동 현황</h2>
+                <div class="w-20 h-1 bg-blue-600 mx-auto"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition">
+                    <div class="h-64 overflow-hidden">
+                        <img src="임명식.jpg" alt="임명식" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="p-6">
+                        <span class="text-sm text-blue-500 font-bold">임명 및 조직강화</span>
+                        <h3 class="text-xl font-bold mt-2">간부 임명식 및 조직 정비</h3>
+                        <p class="text-gray-500 mt-2 text-sm">경기남부본부의 체계적인 조직 운영을 위한 임원 임명식 현장입니다.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition">
+                    <div class="h-64 overflow-hidden">
+                        <img src="집회1.jpg" alt="집회 현장" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="p-6">
+                        <span class="text-sm text-red-500 font-bold">투쟁 및 집회</span>
+                        <h3 class="text-xl font-bold mt-2">현장 권익 사수 결의대회</h3>
+                        <p class="text-gray-500 mt-2 text-sm">건설 현장의 부당 처우 개선과 생존권 사수를 위한 강력한 투쟁을 이어갑니다.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition">
+                    <div class="h-64 overflow-hidden flex items-center justify-center bg-gray-200">
+                        <img src="마크.jpg" alt="본부 로고" class="w-48 h-48 object-contain">
+                    </div>
+                    <div class="p-6">
+                        <span class="text-sm text-green-500 font-bold">공식 상징</span>
+                        <h3 class="text-xl font-bold mt-2">경기남부본부 공식 기치</h3>
+                        <p class="text-gray-500 mt-2 text-sm">전국공공노조 연맹의 정신을 계승하며 지역 본부의 단결을 상징합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-blue-900 text-white rounded-3xl p-8 md:p-16 flex flex-col md:flex-row gap-12 items-center">
+                <div class="md:w-1/2">
+                    <h2 class="text-3xl font-bold mb-6">상담 및 가입 안내</h2>
+                    <p class="mb-8 opacity-80 leading-relaxed">
+                        건설 현장에서 겪는 부당한 대우, 임금 체불, 안전 문제 등 모든 고민을 함께 해결해 드립니다. <br>
+                        지금 바로 경기남부본부의 가족이 되어 정당한 권리를 찾으세요.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-blue-700 rounded-full flex items-center justify-center">📍</div>
+                            <p>경기도 성남시 중원구 희망로 332-1, 2F 2호 (13241)</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-blue-700 rounded-full flex items-center justify-center">📞</div>
+                            <p>대표전화: (031) 747 - 5351</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2 w-full bg-white text-gray-900 p-8 rounded-2xl shadow-lg">
+                    <div data-fs-success class="hidden mb-4 p-4 bg-green-100 text-green-700 rounded-md font-bold text-center">
+                        상담 신청이 정상적으로 접수되었습니다. 곧 연락드리겠습니다.
+                    </div>
+                    <div data-fs-error class="hidden mb-4 p-4 bg-red-100 text-red-700 rounded-md font-bold text-center">
+                        전송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.
+                    </div>
+
+                    <form id="contact-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold mb-2">성함</label>
+                            <input type="text" name="name" required data-fs-field class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="성함을 입력하세요">
+                            <span data-fs-error="name" class="text-xs text-red-500 mt-1"></span>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2">연락처</label>
+                            <input type="tel" name="phone" required data-fs-field class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="010-0000-0000">
+                            <span data-fs-error="phone" class="text-xs text-red-500 mt-1"></span>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2">상담 내용</label>
+                            <textarea name="message" required data-fs-field class="w-full px-4 py-2 border rounded-md h-32 focus:outline-blue-500" placeholder="문의하실 내용을 간단히 적어주세요"></textarea>
+                            <span data-fs-error="message" class="text-xs text-red-500 mt-1"></span>
+                        </div>
+                        <button type="submit" data-fs-submit-btn class="w-full bg-blue-600 text-white py-3 rounded-md font-bold hover:bg-blue-700 transition disabled:bg-gray-400">상담 신청하기</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <kflu-footer></kflu-footer>
+
+    <div id="login-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="login-modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true" onclick="closeModal('login-modal')"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-2xl font-bold leading-6 text-gray-900" id="login-modal-title">로그인</h3>
+                                <button onclick="closeModal('login-modal')" class="text-gray-400 hover:text-gray-600">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <form id="login-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">아이디 (이메일)</label>
+                                    <input type="email" id="login-email" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="example@email.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">비밀번호</label>
+                                    <input type="password" id="login-password" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="••••••••">
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2"> 로그인 상태 유지
+                                    </label>
+                                    <a href="#" class="text-blue-600 hover:underline">비밀번호 찾기</a>
+                                </div>
+                                <button type="submit" class="w-full py-3 mt-4 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">로그인</button>
+                            </form>
+                            <div class="mt-6 text-center text-sm text-gray-500">
+                                계정이 없으신가요? <button onclick="closeModal('login-modal'); openModal('register-modal')" class="text-blue-600 font-bold hover:underline">회원가입</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="register-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="register-modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true" onclick="closeModal('register-modal')"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-2xl font-bold leading-6 text-gray-900" id="register-modal-title">회원가입</h3>
+                                <button onclick="closeModal('register-modal')" class="text-gray-400 hover:text-gray-600">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <form id="register-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">이름</label>
+                                    <input type="text" id="reg-name" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="홍길동">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">아이디 (이메일)</label>
+                                    <input type="email" id="reg-email" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="example@email.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">비밀번호</label>
+                                    <input type="password" id="reg-password" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="8자 이상 입력하세요">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">비밀번호 확인</label>
+                                    <input type="password" id="reg-confirm" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="비밀번호를 다시 입력하세요">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">연락처</label>
+                                    <input type="tel" id="reg-phone" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="010-0000-0000">
+                                </div>
+                                <div class="flex items-start mt-2">
+                                    <input type="checkbox" class="mt-1 mr-2" required>
+                                    <span class="text-sm text-gray-600 underline cursor-pointer">이용약관 및 개인정보 처리방침에 동의합니다.</span>
+                                </div>
+                                <button type="submit" class="w-full py-3 mt-4 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">가입하기</button>
+                            </form>
+                            <div class="mt-6 text-center text-sm text-gray-500">
+                                이미 계정이 있으신가요? <button onclick="closeModal('register-modal'); openModal('login-modal')" class="text-blue-600 font-bold hover:underline">로그인</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { 
+            auth, updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword 
+        } from './main.js';
+        import './components.js';
+
+        // 모달 제어 로직
+        window.openModal = function(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Esc 키로 모달 닫기
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('[role="dialog"]').forEach(modal => {
+                    if (!modal.classList.contains('hidden')) {
+                        closeModal(modal.id);
+                    }
+                });
+            }
+        });
+
+        // 회원가입 제출 처리 로직 (Firebase Auth)
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const confirm = document.getElementById('reg-confirm').value;
+
+            if (password !== confirm) {
+                alert('비밀번호가 일치하지 않습니다.');
+                return;
+            }
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    return updateProfile(userCredential.user, {
+                        displayName: name
+                    });
+                })
+                .then(() => {
+                    alert('회원가입이 완료되었습니다!');
+                    closeModal('register-modal');
+                    location.reload();
+                })
+                .catch((error) => {
+                    alert('회원가입 실패: ' + error.message);
+                });
+        });
+
+        // 로그인 제출 처리 로직 (Firebase Auth)
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    alert('로그인에 성공했습니다!');
+                    closeModal('login-modal');
+                })
+                .catch((error) => {
+                    alert('로그인 실패: 이메일 또는 비밀번호를 확인하세요.');
+                });
+        });
+
+        // Formspree 상담 신청 연동 로직
+        if (window.formspree) {
+            formspree('initForm', { 
+                formElement: '#contact-form', 
+                formId: 'xwvazzzv',
+                onSuccess: function() {
+                    document.getElementById('contact-form').reset();
+                }
+            });
+        }
+    </script>
+    <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 </body>
 </html>
