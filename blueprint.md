@@ -3,33 +3,29 @@
 ## Overview
 이 프로젝트는 **한국노총 전국공공산업노동조합 건설산업분과 경기남부본부**의 공식 웹사이트입니다. 조합원들에게 활동 소식을 전하고, 상담 신청 및 커뮤니티 공간(게시판)을 제공하는 것을 목적으로 합니다.
 
-## Current State & Features (V2)
+## Current State & Features (V2.1)
 - **Web Components Architecture:**
-    - `<kflu-navbar>`: 인증 상태 감지, 스크롤 효과, 공통 네비게이션 관리.
+    - `<kflu-navbar>`: 인증 상태 감지, 스크롤 효과, 공통 네비게이션 관리. **(업데이트: 로그인 시 실명+님 표시)**
     - `<kflu-footer>`: 전역 푸터 일관성 유지.
+    - `<kflu-auth-modals>`: 공통 로그인/회원가입 모달 컴포넌트. **(신규: 중복 이메일 등 한국어 에러 처리 강화)**
 - **Modern Backend Integration (Firebase):**
-    - **Authentication:** Firebase Auth 기반 회원 시스템 (회원가입, 로그인, 실시간 UI 업데이트).
+    - **Authentication:** Firebase Auth 기반 회원 시스템.
     - **Database (Firestore):** 동적 게시판 구현. 
-        - 글쓰기: 회원 전용.
-        - 수정/삭제: 작성자 본인 또는 관리자만 가능 (보안 규칙 적용).
+        - 글쓰기: 회원 전용. **(업데이트: 작성자 실명 자동 기록)**
+        - 수정/삭제: 작성자 본인 또는 관리자만 가능.
 - **Modern CSS (Baseline):**
-    - `style.css`: CSS Variables, Cascade Layers (`@layer`) 활용.
-    - 대화형 요소 글로우 효과 및 카드 리프트 애니메이션 적용.
-- **Admin System:**
-    - 관리자 계정(`admin@admin.com`) 전용 통합 게시글 관리 도구.
-- **Security:**
-    - `firestore.rules`: 서버 측 권한 검증 완료.
+    - `style.css`: CSS Variables, Cascade Layers 활용.
+- **Integration:** 
+    - Formspree: 상담 신청 폼 (`xkoygdjq`). **(업데이트: 이메일 필드 추가 및 AJAX 연동 최적화)**
 
 ## Technology Stack (Completed)
 - **Frontend:** HTML5, Tailwind CSS, JavaScript (ES Modules), Web Components.
 - **Backend:** Firebase Auth, Firestore.
-- **Integration:** Formspree (Contact Form).
 
 ## User Instructions
-- **Admin Account:** `admin@admin.com` 계정으로 로그인 시 `admin.html`에서 모든 게시글을 관리할 수 있습니다.
-- **Environment:** 모든 브라우저(Baseline)를 지원하며, `main.js`의 `firebaseConfig`가 설정되어 있어 즉시 작동합니다.
+- **Display Name:** 회원가입 시 입력한 이름이 네비게이션 바와 게시판 작성자 이름으로 자동 사용됩니다.
+- **Error Handling:** 이미 가입된 이메일로 재가입 시 한국어 안내 메시지가 표시됩니다.
 
 ## Future Recommendations
-1.  **상담 신청 내역 DB 저장:** Formspree 외에 Firestore에도 상담 내역을 저장하여 관리자 페이지에서 한꺼번에 관리.
-2.  **이미지 업로드:** 게시글 작성 시 사진을 첨부할 수 있도록 Firebase Storage 연동.
-3.  **푸시 알림:** 새로운 공지사항 등록 시 조합원들에게 알림 전송 기능.
+1.  **이미지 업로드:** 게시글 작성 시 사진 첨부 기능 (Firebase Storage).
+2.  **상담 관리:** Firestore 연동을 통한 상담 내역 통합 관리.

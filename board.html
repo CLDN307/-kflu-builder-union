@@ -181,12 +181,13 @@
                     });
                     alert('수정되었습니다.');
                 } else {
-                    // 생성
+                    // 생성 - 실명 반영 (displayName이 없으면 이메일 활용)
+                    const authorName = currentUser.displayName || currentUser.email.split('@')[0];
                     await addDoc(collection(db, "posts"), {
                         title,
                         content,
                         authorId: currentUser.uid,
-                        authorName: currentUser.displayName || '익명',
+                        authorName: authorName,
                         createdAt: new Date()
                     });
                     alert('등록되었습니다.');
