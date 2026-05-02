@@ -186,6 +186,11 @@
                             <span data-fs-error="name" class="text-xs text-red-500 mt-1"></span>
                         </div>
                         <div>
+                            <label class="block text-sm font-bold mb-2">이메일</label>
+                            <input type="email" name="email" required data-fs-field class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="example@email.com">
+                            <span data-fs-error="email" class="text-xs text-red-500 mt-1"></span>
+                        </div>
+                        <div>
                             <label class="block text-sm font-bold mb-2">연락처</label>
                             <input type="tel" name="phone" required data-fs-field class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="010-0000-0000">
                             <span data-fs-error="phone" class="text-xs text-red-500 mt-1"></span>
@@ -203,175 +208,10 @@
     </section>
 
     <kflu-footer></kflu-footer>
-
-    <div id="login-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="login-modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true" onclick="closeModal('login-modal')"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-2xl font-bold leading-6 text-gray-900" id="login-modal-title">로그인</h3>
-                                <button onclick="closeModal('login-modal')" class="text-gray-400 hover:text-gray-600">
-                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <form id="login-form" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">아이디 (이메일)</label>
-                                    <input type="email" id="login-email" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="example@email.com">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">비밀번호</label>
-                                    <input type="password" id="login-password" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="••••••••">
-                                </div>
-                                <div class="flex items-center justify-between text-sm">
-                                    <label class="flex items-center">
-                                        <input type="checkbox" class="mr-2"> 로그인 상태 유지
-                                    </label>
-                                    <a href="#" class="text-blue-600 hover:underline">비밀번호 찾기</a>
-                                </div>
-                                <button type="submit" class="w-full py-3 mt-4 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">로그인</button>
-                            </form>
-                            <div class="mt-6 text-center text-sm text-gray-500">
-                                계정이 없으신가요? <button onclick="closeModal('login-modal'); openModal('register-modal')" class="text-blue-600 font-bold hover:underline">회원가입</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="register-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="register-modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true" onclick="closeModal('register-modal')"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-2xl font-bold leading-6 text-gray-900" id="register-modal-title">회원가입</h3>
-                                <button onclick="closeModal('register-modal')" class="text-gray-400 hover:text-gray-600">
-                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <form id="register-form" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">이름</label>
-                                    <input type="text" id="reg-name" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="홍길동">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">아이디 (이메일)</label>
-                                    <input type="email" id="reg-email" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="example@email.com">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">비밀번호</label>
-                                    <input type="password" id="reg-password" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="8자 이상 입력하세요">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">비밀번호 확인</label>
-                                    <input type="password" id="reg-confirm" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="비밀번호를 다시 입력하세요">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">연락처</label>
-                                    <input type="tel" id="reg-phone" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="010-0000-0000">
-                                </div>
-                                <div class="flex items-start mt-2">
-                                    <input type="checkbox" class="mt-1 mr-2" required>
-                                    <span class="text-sm text-gray-600 underline cursor-pointer">이용약관 및 개인정보 처리방침에 동의합니다.</span>
-                                </div>
-                                <button type="submit" class="w-full py-3 mt-4 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">가입하기</button>
-                            </form>
-                            <div class="mt-6 text-center text-sm text-gray-500">
-                                이미 계정이 있으신가요? <button onclick="closeModal('register-modal'); openModal('login-modal')" class="text-blue-600 font-bold hover:underline">로그인</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <kflu-auth-modals></kflu-auth-modals>
 
     <script type="module">
-        import { 
-            auth, updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword 
-        } from './main.js';
         import './components.js';
-
-        // 모달 제어 로직
-        window.openModal = function(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        window.closeModal = function(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Esc 키로 모달 닫기
-        window.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                document.querySelectorAll('[role="dialog"]').forEach(modal => {
-                    if (!modal.classList.contains('hidden')) {
-                        closeModal(modal.id);
-                    }
-                });
-            }
-        });
-
-        // 회원가입 제출 처리 로직 (Firebase Auth)
-        document.getElementById('register-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            const confirm = document.getElementById('reg-confirm').value;
-
-            if (password !== confirm) {
-                alert('비밀번호가 일치하지 않습니다.');
-                return;
-            }
-
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    return updateProfile(userCredential.user, {
-                        displayName: name
-                    });
-                })
-                .then(() => {
-                    alert('회원가입이 완료되었습니다!');
-                    closeModal('register-modal');
-                    location.reload();
-                })
-                .catch((error) => {
-                    alert('회원가입 실패: ' + error.message);
-                });
-        });
-
-        // 로그인 제출 처리 로직 (Firebase Auth)
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then(() => {
-                    alert('로그인에 성공했습니다!');
-                    closeModal('login-modal');
-                })
-                .catch((error) => {
-                    alert('로그인 실패: 이메일 또는 비밀번호를 확인하세요.');
-                });
-        });
 
         // Formspree 상담 신청 연동 로직
         if (window.formspree) {

@@ -1,5 +1,7 @@
 
-import { auth, onAuthStateChanged, signOut } from './main.js';
+import { 
+    auth, db, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile 
+} from './main.js';
 
 class KfluNavbar extends HTMLElement {
     constructor() {
@@ -7,7 +9,7 @@ class KfluNavbar extends HTMLElement {
     }
 
     connectedCallback() {
-        const isIndex = window.location.pathname.endsWith('index.html') || window.location.pathname === '/';
+        const isIndex = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
         const prefix = isIndex ? '' : 'index.html';
 
         this.innerHTML = `
@@ -79,14 +81,186 @@ class KfluNavbar extends HTMLElement {
             }
         });
 
-        logoutBtn.onclick = () => {
-            signOut(auth).then(() => {
-                alert('로그아웃 되었습니다.');
-                location.reload();
-            });
-        };
+        if (logoutBtn) {
+            logoutBtn.onclick = () => {
+                signOut(auth).then(() => {
+                    alert('로그아웃 되었습니다.');
+                    location.reload();
+                });
+            };
+        }
     }
 }
+
+class KfluAuthModals extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            <!-- 로그인 모달 -->
+            <div id="login-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="login-modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                    <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true" onclick="closeModal('login-modal')"></div>
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                    <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
+                                    <div class="flex justify-between items-center mb-6">
+                                        <h3 class="text-2xl font-bold leading-6 text-gray-900" id="login-modal-title">로그인</h3>
+                                        <button onclick="closeModal('login-modal')" class="text-gray-400 hover:text-gray-600">
+                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <form id="login-form-comp" class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-bold text-gray-700 mb-1">아이디 (이메일)</label>
+                                            <input type="email" id="login-email-comp" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="example@email.com">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-bold text-gray-700 mb-1">비밀번호</label>
+                                            <input type="password" id="login-password-comp" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="••••••••">
+                                        </div>
+                                        <button type="submit" class="w-full py-3 mt-4 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">로그인</button>
+                                    </form>
+                                    <div class="mt-6 text-center text-sm text-gray-500">
+                                        계정이 없으신가요? <button onclick="closeModal('login-modal'); openModal('register-modal')" class="text-blue-600 font-bold hover:underline">회원가입</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 회원가입 모달 -->
+            <div id="register-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="register-modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                    <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true" onclick="closeModal('register-modal')"></div>
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                    <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
+                                    <div class="flex justify-between items-center mb-6">
+                                        <h3 class="text-2xl font-bold leading-6 text-gray-900" id="register-modal-title">회원가입</h3>
+                                        <button onclick="closeModal('register-modal')" class="text-gray-400 hover:text-gray-600">
+                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <form id="register-form-comp" class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-bold text-gray-700 mb-1">이름</label>
+                                            <input type="text" id="reg-name-comp" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="홍길동">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-bold text-gray-700 mb-1">아이디 (이메일)</label>
+                                            <input type="email" id="reg-email-comp" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="example@email.com">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-bold text-gray-700 mb-1">비밀번호</label>
+                                            <input type="password" id="reg-password-comp" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="8자 이상 입력하세요">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-bold text-gray-700 mb-1">비밀번호 확인</label>
+                                            <input type="password" id="reg-confirm-comp" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="비밀번호를 다시 입력하세요">
+                                        </div>
+                                        <button type="submit" class="w-full py-3 mt-4 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">가입하기</button>
+                                    </form>
+                                    <div class="mt-6 text-center text-sm text-gray-500">
+                                        이미 계정이 있으신가요? <button onclick="closeModal('register-modal'); openModal('login-modal')" class="text-blue-600 font-bold hover:underline">로그인</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        this.initAuthLogic();
+    }
+
+    initAuthLogic() {
+        const loginForm = this.querySelector('#login-form-comp');
+        const registerForm = this.querySelector('#register-form-comp');
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = this.querySelector('#login-email-comp').value;
+                const password = this.querySelector('#login-password-comp').value;
+
+                signInWithEmailAndPassword(auth, email, password)
+                    .then(() => {
+                        alert('로그인에 성공했습니다!');
+                        closeModal('login-modal');
+                        location.reload();
+                    })
+                    .catch((error) => {
+                        alert('로그인 실패: 이메일 또는 비밀번호를 확인하세요.');
+                    });
+            });
+        }
+
+        if (registerForm) {
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = this.querySelector('#reg-name-comp').value;
+                const email = this.querySelector('#reg-email-comp').value;
+                const password = this.querySelector('#reg-password-comp').value;
+                const confirm = this.querySelector('#reg-confirm-comp').value;
+
+                if (password !== confirm) {
+                    alert('비밀번호가 일치하지 않습니다.');
+                    return;
+                }
+
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        return updateProfile(userCredential.user, { displayName: name });
+                    })
+                    .then(() => {
+                        alert('회원가입이 완료되었습니다!');
+                        closeModal('register-modal');
+                        location.reload();
+                    })
+                    .catch((error) => {
+                        alert('회원가입 실패: ' + error.message);
+                    });
+            });
+        }
+    }
+}
+
+// Global modal control functions
+window.openModal = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+window.closeModal = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Esc key to close modals
+window.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        document.querySelectorAll('[role="dialog"]').forEach(modal => {
+            if (!modal.classList.contains('hidden')) {
+                closeModal(modal.id);
+            }
+        });
+    }
+});
 
 class KfluFooter extends HTMLElement {
     connectedCallback() {
@@ -109,4 +283,5 @@ class KfluFooter extends HTMLElement {
 }
 
 customElements.define('kflu-navbar', KfluNavbar);
+customElements.define('kflu-auth-modals', KfluAuthModals);
 customElements.define('kflu-footer', KfluFooter);
