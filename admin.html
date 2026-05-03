@@ -9,40 +9,73 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body { background-color: #0f172a; color: white; }
+        .tab-btn.active { border-bottom: 2px solid #3b82f6; color: #3b82f6; }
     </style>
 </head>
 <body class="font-sans">
-    
+
     <kflu-navbar></kflu-navbar>
 
     <div class="max-w-6xl mx-auto pt-32 pb-12 px-6">
         <div class="flex justify-between items-center mb-10 border-b border-gray-700 pb-6">
             <h1 class="text-3xl font-black tracking-tight">시스템 관리자 전용</h1>
             <a href="index.html" class="text-sm bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition">사이트로 돌아가기</a>
-        </div>
+        </div> 
 
         <div id="admin-content" class="hidden">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-blue-400">전체 게시글 통합 관리</h2>
-                <button onclick="window.openNoticeModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold transition flex items-center gap-2">
-                    <i class="fa-solid fa-bullhorn"></i> 공지사항 작성
-                </button>
+            <!-- 탭 메뉴 -->
+            <div class="flex gap-8 mb-8 border-b border-gray-800">
+                <button onclick="switchTab('posts')" id="tab-posts" class="tab-btn pb-4 font-bold transition active">게시글 관리</button>
+                <button onclick="switchTab('users')" id="tab-users" class="tab-btn pb-4 font-bold transition">회원 관리</button>
             </div>
-            <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-700 text-gray-300 text-xs uppercase font-bold">
-                        <tr>
-                            <th class="px-6 py-4">구분</th>
-                            <th class="px-6 py-4">제목</th>
-                            <th class="px-6 py-4">작성자</th>
-                            <th class="px-6 py-4">날짜</th>
-                            <th class="px-6 py-4 text-center">작업</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-posts" class="divide-y divide-gray-700">
-                        <!-- 데이터 로드 영역 -->
-                    </tbody>
-                </table>
+
+            <!-- 게시글 관리 섹션 -->
+            <div id="section-posts">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-blue-400">전체 게시글 통합 관리</h2>
+                    <button onclick="window.openNoticeModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold transition flex items-center gap-2">
+                        <i class="fa-solid fa-bullhorn"></i> 공지사항 작성
+                    </button>
+                </div>
+                <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-700 text-gray-300 text-xs uppercase font-bold">
+                            <tr>
+                                <th class="px-6 py-4">구분</th>
+                                <th class="px-6 py-4">제목</th>
+                                <th class="px-6 py-4">작성자</th>
+                                <th class="px-6 py-4">날짜</th>
+                                <th class="px-6 py-4 text-center">작업</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-posts" class="divide-y divide-gray-700">
+                            <!-- 데이터 로드 영역 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 회원 관리 섹션 -->
+            <div id="section-users" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-green-400">회원 통합 관리 <span id="total-user-count" class="text-sm font-normal text-gray-400 ml-2">(총 0명)</span></h2>
+                </div>
+                <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-700 text-gray-300 text-xs uppercase font-bold">
+                            <tr>
+                                <th class="px-6 py-4">이름</th>
+                                <th class="px-6 py-4">이메일</th>
+                                <th class="px-6 py-4">가입일</th>
+                                <th class="px-6 py-4">권한</th>
+                                <th class="px-6 py-4 text-center">작업</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users" class="divide-y divide-gray-700">
+                            <!-- 데이터 로드 영역 -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -81,12 +114,44 @@
         </div>
     </div>
 
+    <!-- 회원 정보 수정 모달 -->
+    <div id="user-edit-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4 text-gray-900">
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" onclick="closeUserEditModal()"></div>
+            <div class="relative bg-white rounded-2xl overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full p-8">
+                <h3 class="text-2xl font-bold mb-6 text-slate-800">회원 정보 수정</h3>
+                <form id="user-edit-form" class="space-y-4">
+                    <input type="hidden" id="edit-user-id">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">이름</label>
+                        <input type="text" id="edit-user-name" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">이메일 (조회전용)</label>
+                        <input type="email" id="edit-user-email" disabled class="w-full px-4 py-2 border bg-gray-50 rounded-xl outline-none text-gray-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">권한</label>
+                        <select id="edit-user-role" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="member">일반회원</option>
+                            <option value="admin">관리자</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-4 mt-6">
+                        <button type="button" onclick="closeUserEditModal()" class="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition">취소</button>
+                        <button type="submit" class="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition">수정완료</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <kflu-footer></kflu-footer>
     <kflu-auth-modals></kflu-auth-modals>
 
     <script type="module">
         import { 
-            auth, db, onAuthStateChanged, collection, getDocs, deleteDoc, doc, query, orderBy, addDoc 
+            auth, db, onAuthStateChanged, collection, getDocs, deleteDoc, doc, query, orderBy, addDoc, updateDoc, getDoc 
         } from './main.js';
         import './components.js';
 
@@ -106,6 +171,7 @@
                     adminContent.classList.remove('hidden');
                     authCheck.classList.add('hidden');
                     loadAllPosts();
+                    loadAllUsers();
                 } else {
                     spinner.classList.add('hidden');
                     authStatus.textContent = "접근 권한이 없습니다. (" + user.email + ")\n관리자 계정으로 다시 로그인해 주세요.";
@@ -119,14 +185,25 @@
             }
         });
 
+        // 탭 전환 로직
+        window.switchTab = (tab) => {
+            const sections = ['posts', 'users'];
+            sections.forEach(s => {
+                document.getElementById(`section-${s}`).classList.add('hidden');
+                document.getElementById(`tab-${s}`).classList.remove('active');
+            });
+            document.getElementById(`section-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+        };
+
+        // 게시글 로드 로직
         async function loadAllPosts() {
             const container = document.getElementById('admin-posts');
             try {
                 const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
                 const snap = await getDocs(q);
-                
                 container.innerHTML = '';
-                
+
                 if (snap.empty) {
                     container.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">관리할 게시글이 없습니다.</td></tr>';
                     return;
@@ -136,7 +213,7 @@
                     const data = d.data();
                     const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : '-';
                     const isNotice = data.isNotice === true;
-                    
+
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-gray-750 transition border-b border-gray-700/50";
                     tr.innerHTML = `
@@ -158,6 +235,105 @@
             }
         }
 
+        // 회원 로드 로직
+        async function loadAllUsers() {
+            const container = document.getElementById('admin-users');
+            const countDisplay = document.getElementById('total-user-count');
+            try {
+                const q = query(collection(db, "users"), orderBy("joinedAt", "desc"));
+                const snap = await getDocs(q);
+                container.innerHTML = '';
+                countDisplay.textContent = `(총 ${snap.size}명)`;
+
+                if (snap.empty) {
+                    container.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">가입된 회원이 없습니다.</td></tr>';
+                    return;
+                }
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    const date = data.joinedAt ? new Date(data.joinedAt.seconds * 1000).toLocaleDateString() : '-';
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-750 transition border-b border-gray-700/50";
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 font-medium">${data.name}</td>
+                        <td class="px-6 py-4 text-sm text-gray-400">${data.email}</td>
+                        <td class="px-6 py-4 text-sm text-gray-400">${date}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${data.role === 'admin' ? 'bg-purple-900/40 text-purple-400 border border-purple-900/50' : 'bg-gray-700 text-gray-300'}">
+                                ${data.role === 'admin' ? '관리자' : '일반'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center flex justify-center gap-2">
+                            <button onclick="window.openUserEditModal('${d.id}')" class="bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 px-3 py-1 rounded transition text-xs border border-blue-900/50">수정</button>
+                            <button onclick="window.confirmUserDelete('${d.id}')" class="bg-red-900/30 text-red-400 hover:bg-red-900/50 px-3 py-1 rounded transition text-xs border border-red-900/50">삭제</button>
+                        </td>
+                    `;
+                    container.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("User Load Error:", error);
+                container.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">회원 정보를 불러오지 못했습니다.</td></tr>';
+            }
+        }
+
+        // 회원 수정 로직
+        window.openUserEditModal = async (id) => {
+            try {
+                const userSnap = await getDoc(doc(db, "users", id));
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    document.getElementById('edit-user-id').value = id;
+                    document.getElementById('edit-user-name').value = data.name;
+                    document.getElementById('edit-user-email').value = data.email;
+                    document.getElementById('edit-user-role').value = data.role || 'member';
+
+                    document.getElementById('user-edit-modal').classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+            } catch (error) {
+                alert('회원 정보를 가져오지 못했습니다.');
+            }
+        };
+
+        window.closeUserEditModal = () => {
+            document.getElementById('user-edit-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        };
+
+        document.getElementById('user-edit-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-user-id').value;
+            const name = document.getElementById('edit-user-name').value;
+            const role = document.getElementById('edit-user-role').value;
+
+            try {
+                await updateDoc(doc(db, "users", id), {
+                    name: name,
+                    role: role
+                });
+                alert('회원 정보가 수정되었습니다.');
+                closeUserEditModal();
+                loadAllUsers();
+            } catch (error) {
+                alert('수정 실패: ' + error.message);
+            }
+        };
+
+        window.confirmUserDelete = async (id) => {
+            if (confirm('회원 정보를 DB에서 삭제하시겠습니까? (Auth 계정은 삭제되지 않으며, DB 기록만 제거됩니다)')) {
+                try {
+                    await deleteDoc(doc(db, "users", id));
+                    alert('삭제되었습니다.');
+                    loadAllUsers();
+                } catch (error) {
+                    alert('삭제 실패: ' + error.message);
+                }
+            }
+        };
+
+        // 기존 게시글 관련 함수들
         window.openNoticeModal = () => {
             document.getElementById('notice-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';

@@ -14,5 +14,16 @@ service cloud.firestore {
         request.auth.token.email == 'admin@admin.com'
       );
     }
+    
+    match /users/{userId} {
+      // 본인 정보는 읽고 쓸 수 있음
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // 관리자는 모든 사용자 정보를 읽고 수정/삭제 가능
+      allow read, update, delete: if request.auth != null && request.auth.token.email == 'admin@admin.com';
+      
+      // 회원가입 시 신규 생성을 허용 (인증된 사용자에 한함)
+      allow create: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }

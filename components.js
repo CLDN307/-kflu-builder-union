@@ -217,8 +217,25 @@ class KfluAuthModals extends HTMLElement {
                 }
 
                 createUserWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
-                        return updateProfile(userCredential.user, { displayName: name });
+                    .then(async (userCredential) => {
+                        const user = userCredential.user;
+                        await updateProfile(user, { displayName: name });
+                        
+                        // Firestore에 사용자 정보 저장
+                        try {
+                            const { doc, setDoc } = await import('./main.js');
+                            await setDoc(doc(db, "users", user.uid), {
+                                uid: user.uid,
+                                name: name,
+                                email: email,
+                                role: 'member',
+                                joinedAt: new Date()
+                            });
+                        } catch (err) {
+                            console.error("Firestore user storage error:", err);
+                        }
+                        
+                        return user;
                     })
                     .then(() => {
                         alert('회원가입이 완료되었습니다!');
