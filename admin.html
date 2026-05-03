@@ -240,7 +240,8 @@
             const container = document.getElementById('admin-users');
             const countDisplay = document.getElementById('total-user-count');
             try {
-                const q = query(collection(db, "users"), orderBy("joinedAt", "desc"));
+                // 인덱스 문제 가능성을 배제하기 위해 orderBy를 일시적으로 제거
+                const q = query(collection(db, "users"));
                 const snap = await getDocs(q);
                 container.innerHTML = '';
                 countDisplay.textContent = `(총 ${snap.size}명)`;
@@ -250,8 +251,19 @@
                     return;
                 }
 
+                // 데이터를 배열로 받아 수동 정렬 (가입일 순)
+                const users = [];
                 snap.forEach(d => {
-                    const data = d.data();
+                    users.push({ id: d.id, ...d.data() });
+                });
+                
+                users.sort((a, b) => {
+                    const dateA = a.joinedAt ? a.joinedAt.seconds : 0;
+                    const dateB = b.joinedAt ? b.joinedAt.seconds : 0;
+                    return dateB - dateA;
+                });
+
+                users.forEach(data => {
                     const date = data.joinedAt ? new Date(data.joinedAt.seconds * 1000).toLocaleDateString() : '-';
 
                     const tr = document.createElement('tr');
@@ -266,15 +278,15 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-center flex justify-center gap-2">
-                            <button onclick="window.openUserEditModal('${d.id}')" class="bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 px-3 py-1 rounded transition text-xs border border-blue-900/50">수정</button>
-                            <button onclick="window.confirmUserDelete('${d.id}')" class="bg-red-900/30 text-red-400 hover:bg-red-900/50 px-3 py-1 rounded transition text-xs border border-red-900/50">삭제</button>
+                            <button onclick="window.openUserEditModal('${data.id}')" class="bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 px-3 py-1 rounded transition text-xs border border-blue-900/50">수정</button>
+                            <button onclick="window.confirmUserDelete('${data.id}')" class="bg-red-900/30 text-red-400 hover:bg-red-900/50 px-3 py-1 rounded transition text-xs border border-red-900/50">삭제</button>
                         </td>
                     `;
                     container.appendChild(tr);
                 });
             } catch (error) {
                 console.error("User Load Error:", error);
-                container.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">회원 정보를 불러오지 못했습니다.</td></tr>';
+                container.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">회원 정보를 불러오지 못했습니다.<br><span class="text-xs text-gray-500">${error.message}</span></td></tr>`;
             }
         }
 

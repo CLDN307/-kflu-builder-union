@@ -1,6 +1,5 @@
-
 import { 
-    auth, db, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile 
+    auth, db, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, doc, setDoc, serverTimestamp 
 } from './main.js';
 
 class KfluNavbar extends HTMLElement {
@@ -223,13 +222,12 @@ class KfluAuthModals extends HTMLElement {
                         
                         // Firestore에 사용자 정보 저장
                         try {
-                            const { doc, setDoc } = await import('./main.js');
                             await setDoc(doc(db, "users", user.uid), {
                                 uid: user.uid,
                                 name: name,
                                 email: email,
                                 role: 'member',
-                                joinedAt: new Date()
+                                joinedAt: serverTimestamp()
                             });
                         } catch (err) {
                             console.error("Firestore user storage error:", err);
