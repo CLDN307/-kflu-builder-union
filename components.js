@@ -158,6 +158,10 @@ class KfluAuthModals extends HTMLElement {
                                             <input type="email" id="reg-email-comp" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="example@email.com">
                                         </div>
                                         <div>
+                                            <label class="block text-sm font-bold text-gray-700 mb-1">연락처</label>
+                                            <input type="tel" id="reg-phone-comp" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="010-0000-0000">
+                                        </div>
+                                        <div>
                                             <label class="block text-sm font-bold text-gray-700 mb-1">비밀번호</label>
                                             <input type="password" id="reg-password-comp" required class="w-full px-4 py-2 border rounded-md focus:outline-blue-500" placeholder="8자 이상 입력하세요">
                                         </div>
@@ -203,10 +207,11 @@ class KfluAuthModals extends HTMLElement {
         }
 
         if (registerForm) {
-            registerForm.addEventListener('submit', (e) => {
+            registerForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const name = this.querySelector('#reg-name-comp').value;
                 const email = this.querySelector('#reg-email-comp').value;
+                const phone = this.querySelector('#reg-phone-comp').value;
                 const password = this.querySelector('#reg-password-comp').value;
                 const confirm = this.querySelector('#reg-confirm-comp').value;
 
@@ -215,48 +220,54 @@ class KfluAuthModals extends HTMLElement {
                     return;
                 }
 
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then(async (userCredential) => {
-                        const user = userCredential.user;
-                        await updateProfile(user, { displayName: name });
-                        
-                        // Firestore에 사용자 정보 저장
-                        try {
-                            await setDoc(doc(db, "users", user.uid), {
-                                uid: user.uid,
-                                name: name,
-                                email: email,
-                                role: 'member',
-                                joinedAt: serverTimestamp()
-                            });
-                        } catch (err) {
-                            console.error("Firestore user storage error:", err);
-                        }
-                        
-                        return user;
-                    })
-                    .then(() => {
-                        alert('회원가입이 완료되었습니다!');
-                        closeModal('register-modal');
-                        location.reload();
-                    })
-                    .catch((error) => {
-                        let message = '회원가입 실패: ';
-                        switch (error.code) {
-                            case 'auth/email-already-in-use':
-                                message += '이미 가입된 이메일입니다. 다른 이메일을 사용하거나 로그인해 주세요.';
-                                break;
-                            case 'auth/invalid-email':
-                                message += '유효하지 않은 이메일 형식입니다.';
-                                break;
-                            case 'auth/weak-password':
-                                message += '비밀번호가 너무 취약합니다. 6자 이상의 비밀번호를 입력하세요.';
-                                break;
-                            default:
-                                message += error.message;
-                        }
-                        alert(message);
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '가입 처리 중...';
+
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                    
+                    // 프로필 업데이트
+                    await updateProfile(user, { displayName: name });
+                    
+                    // 관리자 이메일 체크 (대소문자 무시)
+                    const isAdminEmail = email.toLowerCase().trim() === 'admin@admin.com';
+                    
+                    // Firestore에 사용자 정보 저장
+                    await setDoc(doc(db, "users", user.uid), {
+                        uid: user.uid,
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        role: isAdminEmail ? 'admin' : 'member',
+                        joinedAt: serverTimestamp()
                     });
+
+                    alert('회원가입이 완료되었습니다!');
+                    closeModal('register-modal');
+                    location.reload();
+                } catch (error) {
+                    console.error("Registration error:", error);
+                    let message = '회원가입 실패: ';
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            message += '이미 가입된 이메일입니다.';
+                            break;
+                        case 'auth/weak-password':
+                            message += '비밀번호가 너무 취약합니다.';
+                            break;
+                        case 'permission-denied':
+                            message += '데이터 저장 권한이 없습니다. (Firestore 규칙 확인 필요)';
+                            break;
+                        default:
+                            message += error.message;
+                    }
+                    alert(message);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '가입하기';
+                }
             });
         }
     }

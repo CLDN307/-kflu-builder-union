@@ -97,6 +97,7 @@
             <div class="relative bg-white rounded-2xl overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full p-8">
                 <h3 class="text-2xl font-bold mb-6 text-slate-800">새 공지사항 작성</h3>
                 <form id="notice-form" class="space-y-4">
+                    <input type="hidden" id="notice-id">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">제목</label>
                         <input type="text" id="notice-title" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="공지사항 제목을 입력하세요">
@@ -131,6 +132,10 @@
                         <input type="email" id="edit-user-email" disabled class="w-full px-4 py-2 border bg-gray-50 rounded-xl outline-none text-gray-500">
                     </div>
                     <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">연락처</label>
+                        <input type="tel" id="edit-user-phone" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">권한</label>
                         <select id="edit-user-role" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                             <option value="member">일반회원</option>
@@ -151,7 +156,7 @@
 
     <script type="module">
         import { 
-            auth, db, onAuthStateChanged, collection, getDocs, deleteDoc, doc, query, orderBy, addDoc, updateDoc, getDoc 
+            auth, db, onAuthStateChanged, collection, getDocs, deleteDoc, doc, query, orderBy, addDoc, updateDoc, getDoc, serverTimestamp 
         } from './main.js';
         import './components.js';
 
@@ -166,15 +171,21 @@
             const loginReq = document.getElementById('login-required');
 
             if (user) {
-                if (user.email === ADMIN_EMAIL) {
+                const userEmail = (user.email || "").toLowerCase().trim();
+                console.log("Current user email:", userEmail);
+                
+                if (userEmail === ADMIN_EMAIL) {
                     currentAdmin = user;
                     adminContent.classList.remove('hidden');
                     authCheck.classList.add('hidden');
+                    
+                    // 권한 보장을 위해 데이터 로딩 전 약간의 지연(토큰 갱신 대기)을 줄 수도 있으나
+                    // 즉시 실행 후 에러 핸들링에서 재시도 안내
                     loadAllPosts();
                     loadAllUsers();
                 } else {
                     spinner.classList.add('hidden');
-                    authStatus.textContent = "접근 권한이 없습니다. (" + user.email + ")\n관리자 계정으로 다시 로그인해 주세요.";
+                    authStatus.innerHTML = `접근 권한이 없습니다.<br><span class="text-sm text-gray-500">현재 계정: ${user.email}</span><br><span class="text-blue-400 text-sm mt-2 block">관리자 계정(${ADMIN_EMAIL})으로 로그인해 주세요.</span>`;
                     authStatus.classList.add('text-red-400');
                     loginReq.classList.remove('hidden');
                 }
@@ -185,6 +196,17 @@
             }
         });
 
+        function formatDate(timestamp) {
+            if (!timestamp) return '-';
+            if (timestamp.seconds) {
+                return new Date(timestamp.seconds * 1000).toLocaleDateString();
+            }
+            if (timestamp instanceof Date) {
+                return timestamp.toLocaleDateString();
+            }
+            return new Date(timestamp).toLocaleDateString();
+        }
+
         // 탭 전환 로직
         window.switchTab = (tab) => {
             const sections = ['posts', 'users'];
@@ -194,6 +216,10 @@
             });
             document.getElementById(`section-${tab}`).classList.remove('hidden');
             document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            // 탭 전환 시 데이터 다시 로드 (최신 상태 유지)
+            if (tab === 'posts') loadAllPosts();
+            if (tab === 'users') loadAllUsers();
         };
 
         // 게시글 로드 로직
@@ -211,7 +237,7 @@
 
                 snap.forEach(d => {
                     const data = d.data();
-                    const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : '-';
+                    const date = formatDate(data.createdAt);
                     const isNotice = data.isNotice === true;
 
                     const tr = document.createElement('tr');
@@ -231,7 +257,7 @@
                 });
             } catch (error) {
                 console.error("Firestore Query Error:", error);
-                container.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">데이터 로딩 중 오류가 발생했습니다.</td></tr>';
+                container.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">데이터 로딩 중 오류가 발생했습니다.<br><span class="text-xs text-gray-500">${error.code || error.message}</span></td></tr>`;
             }
         }
 
@@ -240,9 +266,8 @@
             const container = document.getElementById('admin-users');
             const countDisplay = document.getElementById('total-user-count');
             try {
-                // 인덱스 문제 가능성을 배제하기 위해 orderBy를 일시적으로 제거
-                const q = query(collection(db, "users"));
-                const snap = await getDocs(q);
+                // 인덱스 문제 가능성을 배제하기 위해 orderBy 없이 가져온 후 JS에서 정렬
+                const snap = await getDocs(collection(db, "users"));
                 container.innerHTML = '';
                 countDisplay.textContent = `(총 ${snap.size}명)`;
 
@@ -251,42 +276,44 @@
                     return;
                 }
 
-                // 데이터를 배열로 받아 수동 정렬 (가입일 순)
                 const users = [];
                 snap.forEach(d => {
                     users.push({ id: d.id, ...d.data() });
                 });
                 
+                // 수동 정렬: 가입일 내림차순
                 users.sort((a, b) => {
-                    const dateA = a.joinedAt ? a.joinedAt.seconds : 0;
-                    const dateB = b.joinedAt ? b.joinedAt.seconds : 0;
+                    const dateA = (a.joinedAt && a.joinedAt.seconds) ? a.joinedAt.seconds : 0;
+                    const dateB = (b.joinedAt && b.joinedAt.seconds) ? b.joinedAt.seconds : 0;
                     return dateB - dateA;
                 });
 
                 users.forEach(data => {
-                    const date = data.joinedAt ? new Date(data.joinedAt.seconds * 1000).toLocaleDateString() : '-';
+                    const date = formatDate(data.joinedAt);
 
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-gray-750 transition border-b border-gray-700/50";
                     tr.innerHTML = `
-                        <td class="px-6 py-4 font-medium">${data.name}</td>
-                        <td class="px-6 py-4 text-sm text-gray-400">${data.email}</td>
+                        <td class="px-6 py-4 font-medium">${data.name || '이름없음'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-400">${data.email || '-'}</td>
                         <td class="px-6 py-4 text-sm text-gray-400">${date}</td>
                         <td class="px-6 py-4 text-sm">
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${data.role === 'admin' ? 'bg-purple-900/40 text-purple-400 border border-purple-900/50' : 'bg-gray-700 text-gray-300'}">
                                 ${data.role === 'admin' ? '관리자' : '일반'}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-center flex justify-center gap-2">
-                            <button onclick="window.openUserEditModal('${data.id}')" class="bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 px-3 py-1 rounded transition text-xs border border-blue-900/50">수정</button>
-                            <button onclick="window.confirmUserDelete('${data.id}')" class="bg-red-900/30 text-red-400 hover:bg-red-900/50 px-3 py-1 rounded transition text-xs border border-red-900/50">삭제</button>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex justify-center gap-2">
+                                <button onclick="window.openUserEditModal('${data.id}')" class="bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 px-3 py-1 rounded transition text-xs border border-blue-900/50">수정</button>
+                                <button onclick="window.confirmUserDelete('${data.id}')" class="bg-red-900/30 text-red-400 hover:bg-red-900/50 px-3 py-1 rounded transition text-xs border border-red-900/50">삭제</button>
+                            </div>
                         </td>
                     `;
                     container.appendChild(tr);
                 });
             } catch (error) {
                 console.error("User Load Error:", error);
-                container.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">회원 정보를 불러오지 못했습니다.<br><span class="text-xs text-gray-500">${error.message}</span></td></tr>`;
+                container.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">회원 정보를 불러오지 못했습니다.<br><span class="text-xs text-gray-500">${error.code || error.message}</span></td></tr>`;
             }
         }
 
@@ -370,7 +397,7 @@
                     authorId: currentAdmin.uid,
                     authorName: '관리자',
                     isNotice: true,
-                    createdAt: new Date()
+                    createdAt: serverTimestamp()
                 });
                 alert('공지사항이 등록되었습니다.');
                 closeNoticeModal();

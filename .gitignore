@@ -1,0 +1,7 @@
+node_modules/
+.idx/
+.vscode/
+dist/
+output.css
+.env
+*.log

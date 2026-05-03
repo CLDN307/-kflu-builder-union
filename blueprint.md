@@ -3,7 +3,7 @@
 ## Overview
 이 프로젝트는 **한국노총 전국공공산업노동조합 건설산업분과 경기남부본부**의 공식 웹사이트입니다. 조합원들에게 활동 소식을 전하고, 상담 신청 및 커뮤니티 공간(게시판)을 제공하는 것을 목적으로 합니다.
 
-## Current State & Features (V2.3)
+## Current State & Features (V2.5)
 - **Web Components Architecture:**
     - `<kflu-navbar>`: 인증 상태 감지, 스크롤 효과, 공통 네비게이션 관리. (업데이트: 로그인 시 실명+님 표시)
     - `<kflu-footer>`: 전역 푸터 일관성 유지.
@@ -11,10 +11,13 @@
 - **Modern Backend Integration (Firebase):**
     - **Authentication:** Firebase Auth 기반 회원 시스템.
     - **Database (Firestore):** 동적 게시판 구현. 
+        - **게시판 안정화:** 게시판 스타일 깨짐 문제(Tailwind CSS 연동) 및 날짜 표시 오류(Invalid Date) 수정 완료.
         - **공지사항 기능:** 관리자 페이지에서 공지사항 작성 가능. 게시판 최상단에 "공지" 라벨과 함께 고정 노출.
         - **읽기 권한:** 로그인한 회원만 전체 글 읽기 가능 (상세 보기 모달 추가).
         - **쓰기 권한:** 회원 전용. (업데이트: 작성자 실명 자동 기록)
         - **수정/삭제:** 작성자 본인 또는 관리자만 가능.
+    - **Project Connection:** `.firebaserc`를 통한 Firebase 프로젝트(`sky-32864696-f9b55`) 연결 완료.
+    - **Hosting:** `firebase.json`에 Hosting 설정(SPA 지원) 추가 완료.
 - **Modern CSS (Baseline):**
     - `style.css`: CSS Variables, Cascade Layers 활용.
 - **Integration:** 

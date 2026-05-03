@@ -112,7 +112,7 @@
     <script type="module" src="components.js"></script>
     <script type="module">
         import { 
-            auth, db, onAuthStateChanged, collection, addDoc, getDocs, query, orderBy, doc, deleteDoc, updateDoc, getDoc 
+            auth, db, onAuthStateChanged, collection, addDoc, getDocs, query, orderBy, doc, deleteDoc, updateDoc, getDoc, serverTimestamp 
         } from './main.js';
 
         let currentUser = null;
@@ -121,6 +121,20 @@
             currentUser = user;
             loadPosts();
         });
+
+        function formatDate(timestamp) {
+            if (!timestamp) return '-';
+            // Firestore Timestamp 처리
+            if (timestamp.seconds) {
+                return new Date(timestamp.seconds * 1000).toLocaleDateString();
+            }
+            // JS Date 객체 처리
+            if (timestamp instanceof Date) {
+                return timestamp.toLocaleDateString();
+            }
+            // 기타 (문자열 등)
+            return new Date(timestamp).toLocaleDateString();
+        }
 
         async function loadPosts() {
             const postList = document.getElementById('post-list');
@@ -153,7 +167,7 @@
 
                 function renderRow(docSnap, displayIndex, isNotice) {
                     const data = docSnap.data();
-                    const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : '-';
+                    const date = formatDate(data.createdAt);
                     const isAuthor = currentUser && currentUser.uid === data.authorId;
 
                     const tr = document.createElement('tr');
@@ -206,7 +220,7 @@
                     const data = docSnap.data();
                     document.getElementById('view-title').textContent = data.title;
                     document.getElementById('view-author').textContent = data.authorName || '익명';
-                    document.getElementById('view-date').textContent = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : '-';
+                    document.getElementById('view-date').textContent = formatDate(data.createdAt);
                     document.getElementById('view-content').textContent = data.content;
                     window.openViewModal();
                 }
@@ -260,7 +274,7 @@
                     await updateDoc(doc(db, "posts", id), {
                         title,
                         content,
-                        updatedAt: new Date()
+                        updatedAt: serverTimestamp()
                     });
                     alert('수정되었습니다.');
                 } else {
@@ -270,7 +284,7 @@
                         content,
                         authorId: currentUser.uid,
                         authorName: authorName,
-                        createdAt: new Date()
+                        createdAt: serverTimestamp()
                     });
                     alert('등록되었습니다.');
                 }

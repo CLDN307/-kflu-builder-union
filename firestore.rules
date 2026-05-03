@@ -1,26 +1,34 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // 관리자 여부 확인 함수 (이메일 기반)
+    function isAdmin() {
+      // 인증된 상태이고, 이메일이 관리자 계정과 일치하는지 확인
+      return request.auth != null && 
+             request.auth.token.email.matches('(?i)admin@admin\\.com');
+    }
+
+    // 게시글 컬렉션 규칙
     match /posts/{postId} {
-      // 로그인한 사용자만 게시글을 읽을 수 있습니다.
+      // 모든 사용자는 게시글 목록과 상세 내용을 읽을 수 있습니다.
       allow read: if request.auth != null;
       
       // 로그인한 사용자만 게시글을 작성할 수 있습니다.
       allow create: if request.auth != null;
       
-      // 작성자 본인 또는 관리자(admin@admin.com)만 수정 및 삭제가 가능합니다.
-      allow update, delete: if request.auth != null && (
-        request.auth.uid == resource.data.authorId || 
-        request.auth.token.email == 'admin@admin.com'
-      );
+      // 작성자 본인 또는 관리자만 수정 및 삭제가 가능합니다.
+      allow update, delete: if isAdmin() || 
+                           (request.auth != null && request.auth.uid == resource.data.authorId);
     }
     
+    // 사용자 컬렉션 규칙
     match /users/{userId} {
       // 본인 정보는 읽고 쓸 수 있음
       allow read, write: if request.auth != null && request.auth.uid == userId;
       
-      // 관리자는 모든 사용자 정보를 읽고 수정/삭제 가능
-      allow read, update, delete: if request.auth != null && request.auth.token.email == 'admin@admin.com';
+      // 관리자는 모든 회원 정보를 읽고 수정/삭제 가능
+      allow read, update, delete: if isAdmin();
       
       // 회원가입 시 신규 생성을 허용 (인증된 사용자에 한함)
       allow create: if request.auth != null && request.auth.uid == userId;
