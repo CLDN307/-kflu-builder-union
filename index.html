@@ -239,14 +239,48 @@
     <kflu-auth-modals></kflu-auth-modals>
 
     <script type="module" src="components.js"></script>
-    <script src="https://unpkg.com/@formspree/ajax@1"></script>
     <script>
-        window.addEventListener('DOMContentLoaded', function() {
-            if (typeof formspree !== 'undefined') {
-                formspree('initForm', { 
-                    formElement: '#contact-form', 
-                    formId: 'xgodowke'
+        document.getElementById('contact-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const successMsg = document.querySelector('[data-fs-success]');
+            const errorMsg = document.querySelector('[data-fs-error]');
+            
+            // 초기화
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = '전송 중...';
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
                 });
+
+                if (response.ok) {
+                    successMsg.style.display = 'block';
+                    form.reset();
+                    form.style.display = 'none'; // 성공 시 폼 숨김 (선택 사항)
+                } else {
+                    const result = await response.json();
+                    errorMsg.textContent = result.error || '전송 중 오류가 발생했습니다.';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                errorMsg.textContent = '연결 오류가 발생했습니다. 나중에 다시 시도해 주세요.';
+                errorMsg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '상담 신청하기';
             }
         });
     </script>
