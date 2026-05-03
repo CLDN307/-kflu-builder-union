@@ -5,21 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 모드 | 경기남부본부</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        body { background-color: #0f172a; color: white; }
+    </style>
 </head>
-<body class="bg-gray-900 text-white font-sans">
-    <div class="max-w-6xl mx-auto py-12 px-6">
+<body class="font-sans">
+    
+    <kflu-navbar></kflu-navbar>
+
+    <div class="max-w-6xl mx-auto pt-32 pb-12 px-6">
         <div class="flex justify-between items-center mb-10 border-b border-gray-700 pb-6">
             <h1 class="text-3xl font-black tracking-tight">시스템 관리자 전용</h1>
             <a href="index.html" class="text-sm bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition">사이트로 돌아가기</a>
         </div>
 
         <div id="admin-content" class="hidden">
-            <h2 class="text-xl font-bold mb-6 text-blue-400">전체 게시글 통합 관리</h2>
-            <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-blue-400">전체 게시글 통합 관리</h2>
+                <button onclick="window.openNoticeModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold transition flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn"></i> 공지사항 작성
+                </button>
+            </div>
+            <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
                 <table class="w-full text-left">
                     <thead class="bg-gray-700 text-gray-300 text-xs uppercase font-bold">
                         <tr>
+                            <th class="px-6 py-4">구분</th>
                             <th class="px-6 py-4">제목</th>
                             <th class="px-6 py-4">작성자</th>
                             <th class="px-6 py-4">날짜</th>
@@ -27,41 +40,82 @@
                         </tr>
                     </thead>
                     <tbody id="admin-posts" class="divide-y divide-gray-700">
-                        <!-- 데이터 로드 -->
+                        <!-- 데이터 로드 영역 -->
                     </tbody>
                 </table>
             </div>
         </div>
 
         <div id="auth-check" class="flex flex-col items-center justify-center py-20 text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-            <p id="auth-status" class="text-gray-400">관리자 권한을 확인하고 있습니다...</p>
+            <div id="loading-spinner" class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+            <p id="auth-status" class="text-gray-400 text-lg">관리자 권한을 확인하고 있습니다...</p>
+            <div id="login-required" class="hidden mt-6">
+                <button onclick="window.openModal('login-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition">
+                    관리자 계정으로 로그인
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 공지사항 작성 모달 -->
+    <div id="notice-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4 text-gray-900">
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" onclick="closeNoticeModal()"></div>
+            <div class="relative bg-white rounded-2xl overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full p-8">
+                <h3 class="text-2xl font-bold mb-6 text-slate-800">새 공지사항 작성</h3>
+                <form id="notice-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">제목</label>
+                        <input type="text" id="notice-title" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="공지사항 제목을 입력하세요">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">내용</label>
+                        <textarea id="notice-content" required class="w-full px-4 py-2 border rounded-xl h-48 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="공지사항 내용을 입력하세요"></textarea>
+                    </div>
+                    <div class="flex gap-4 mt-6">
+                        <button type="button" onclick="closeNoticeModal()" class="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition">취소</button>
+                        <button type="submit" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">공지하기</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <kflu-footer></kflu-footer>
+    <kflu-auth-modals></kflu-auth-modals>
 
     <script type="module">
         import { 
-            auth, db, onAuthStateChanged, collection, getDocs, deleteDoc, doc, query, orderBy 
+            auth, db, onAuthStateChanged, collection, getDocs, deleteDoc, doc, query, orderBy, addDoc 
         } from './main.js';
         import './components.js';
 
-        const ADMIN_EMAIL = "admin@admin.com"; // 관리자 계정 이메일 설정
+        const ADMIN_EMAIL = "admin@admin.com";
+        let currentAdmin = null;
 
         onAuthStateChanged(auth, async (user) => {
             const adminContent = document.getElementById('admin-content');
             const authCheck = document.getElementById('auth-check');
             const authStatus = document.getElementById('auth-status');
+            const spinner = document.getElementById('loading-spinner');
+            const loginReq = document.getElementById('login-required');
 
-            if (user && user.email === ADMIN_EMAIL) {
-                adminContent.classList.remove('hidden');
-                authCheck.classList.add('hidden');
-                loadAllPosts();
+            if (user) {
+                if (user.email === ADMIN_EMAIL) {
+                    currentAdmin = user;
+                    adminContent.classList.remove('hidden');
+                    authCheck.classList.add('hidden');
+                    loadAllPosts();
+                } else {
+                    spinner.classList.add('hidden');
+                    authStatus.textContent = "접근 권한이 없습니다. (" + user.email + ")\n관리자 계정으로 다시 로그인해 주세요.";
+                    authStatus.classList.add('text-red-400');
+                    loginReq.classList.remove('hidden');
+                }
             } else {
-                authStatus.textContent = "접근 권한이 없습니다. 관리자 계정으로 로그인해 주세요.";
-                authStatus.classList.add('text-red-500');
-                document.querySelector('.animate-spin').classList.add('hidden');
+                spinner.classList.add('hidden');
+                authStatus.textContent = "관리자 전용 페이지입니다. 로그인이 필요합니다.";
+                loginReq.classList.remove('hidden');
             }
         });
 
@@ -74,35 +128,79 @@
                 container.innerHTML = '';
                 
                 if (snap.empty) {
-                    container.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500">관리할 게시글이 없습니다.</td></tr>';
+                    container.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">관리할 게시글이 없습니다.</td></tr>';
                     return;
                 }
 
                 snap.forEach(d => {
                     const data = d.data();
                     const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : '-';
+                    const isNotice = data.isNotice === true;
                     
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-gray-750 transition";
+                    tr.className = "hover:bg-gray-750 transition border-b border-gray-700/50";
                     tr.innerHTML = `
+                        <td class="px-6 py-4">
+                            ${isNotice ? '<span class="px-2 py-1 bg-red-900/40 text-red-400 text-[10px] font-bold rounded border border-red-900/50">공지</span>' : '<span class="text-gray-500 text-xs">일반</span>'}
+                        </td>
                         <td class="px-6 py-4 font-medium">${data.title}</td>
-                        <td class="px-6 py-4 text-sm text-gray-400">${data.authorName}</td>
+                        <td class="px-6 py-4 text-sm text-gray-400">${data.authorName || '익명'}</td>
                         <td class="px-6 py-4 text-sm text-gray-400">${date}</td>
                         <td class="px-6 py-4 text-center">
-                            <button onclick="confirmDelete('${d.id}')" class="bg-red-900/30 text-red-400 hover:bg-red-900/50 px-3 py-1 rounded transition text-xs border border-red-900/50">삭제</button>
+                            <button onclick="window.confirmDelete('${d.id}')" class="bg-red-900/30 text-red-400 hover:bg-red-900/50 px-3 py-1 rounded transition text-xs border border-red-900/50">삭제</button>
                         </td>
                     `;
                     container.appendChild(tr);
                 });
             } catch (error) {
-                console.error(error);
+                console.error("Firestore Query Error:", error);
+                container.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-red-400">데이터 로딩 중 오류가 발생했습니다.</td></tr>';
             }
         }
 
+        window.openNoticeModal = () => {
+            document.getElementById('notice-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeNoticeModal = () => {
+            document.getElementById('notice-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        };
+
+        document.getElementById('notice-form').onsubmit = async (e) => {
+            e.preventDefault();
+            if (!currentAdmin) return;
+
+            const title = document.getElementById('notice-title').value;
+            const content = document.getElementById('notice-content').value;
+
+            try {
+                await addDoc(collection(db, "posts"), {
+                    title: title,
+                    content: content,
+                    authorId: currentAdmin.uid,
+                    authorName: '관리자',
+                    isNotice: true,
+                    createdAt: new Date()
+                });
+                alert('공지사항이 등록되었습니다.');
+                closeNoticeModal();
+                loadAllPosts();
+            } catch (error) {
+                alert('등록 실패: ' + error.message);
+            }
+        };
+
         window.confirmDelete = async (id) => {
             if (confirm('관리자 권한으로 이 글을 삭제하시겠습니까?')) {
-                await deleteDoc(doc(db, "posts", id));
-                loadAllPosts();
+                try {
+                    await deleteDoc(doc(db, "posts", id));
+                    alert('삭제되었습니다.');
+                    loadAllPosts();
+                } catch (error) {
+                    alert('삭제 실패: ' + error.message);
+                }
             }
         }
     </script>

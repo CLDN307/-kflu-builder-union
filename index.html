@@ -20,52 +20,80 @@
 
     <kflu-navbar></kflu-navbar>
 
-    <section id="home" class="hero-gradient h-screen flex items-center justify-center text-center text-white px-4">
-        <div class="max-w-4xl">
-            <h2 class="text-xl md:text-2xl font-light mb-4 tracking-widest">한국노총 전국공공산업노동조합</h2>
-            <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight">건설산업분과<br><span class="text-blue-400">경기남부본부</span></h1>
-            <p class="text-lg md:text-xl font-light mb-8 opacity-90">건설노동자의 권익 보호와 고용 안정을 위해 앞장서겠습니다.</p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <a href="#about" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md font-bold transition">상세보기</a>
-                <a href="#contact" class="bg-white hover:bg-gray-100 text-blue-900 px-8 py-3 rounded-md font-bold transition">문의하기</a>
+    <section id="home" class="relative h-screen flex items-center justify-center text-center text-white overflow-hidden">
+        <!-- 메인 배경 이미지 -->
+        <div class="absolute inset-0 z-0">
+            <img src="대문.jpg" alt="경기남부본부 대문" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black/60"></div>
+        </div>
+
+        <div class="relative z-10 max-w-4xl px-4">
+            
+            <h2 class="text-xl md:text-2xl font-light mb-4 tracking-widest uppercase">한국노총 전국공공산업노동조합</h2>
+            <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight drop-shadow-2xl">
+                건설산업분과<br><span class="text-blue-400">경기남부본부</span>
+            </h1>
+            <p class="text-lg md:text-2xl font-light mb-12 opacity-90 max-w-2xl mx-auto leading-relaxed">
+                건설노동자의 권익 보호와 고용 안정을 위해<br class="hidden md:block"> 투쟁의 최선봉에 서겠습니다.
+            </p>
+            <div class="flex flex-wrap justify-center gap-6">
+                <a href="#about" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-xl flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info"></i> 본부 소개
+                </a>
+                <a href="#contact" class="bg-white hover:bg-gray-100 text-blue-900 px-10 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-xl flex items-center gap-2">
+                    <i class="fa-solid fa-phone"></i> 상담 신청
+                </a>
             </div>
+        </div>
+
+        <!-- 하단 화살표 -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
+            <a href="#about" class="text-white/70 hover:text-white transition">
+                <i class="fa-solid fa-chevron-down text-3xl"></i>
+            </a>
         </div>
     </section>
 
-    <section id="about" class="py-20 px-6">
-    <section id="message" class="py-20 px-6 bg-white">
-    <div class="max-w-5xl mx-auto">
-        <h2 class="text-3xl font-bold mb-10 text-center">본부장 인사말</h2>
-        <div class="text-gray-700 leading-relaxed space-y-6 text-lg">
-            <p>
-                존경하는 조합원 여러분, 그리고 건설 현장에서 묵묵히 땀 흘리고 계신 모든 노동자 여러분께 깊은 인사를 드립니다.
-            </p>
-            <p>
-                한국노총 전국공공산업노동조합 경기남부본부는 그동안 수많은 어려움 속에서도 노동자의 권익을 지키기 위해 쉼 없이 달려왔습니다.
-                우리는 단순히 임금과 처우 개선을 넘어서, 노동자의 존엄성과 삶의 질을 지키는 것을 가장 중요한 가치로 삼고 있습니다.
-            </p>
-            <p>
-                건설 현장은 여전히 위험과 불안정 속에 놓여 있으며, 부당한 대우와 불합리한 구조가 남아 있습니다.
-                이러한 현실 속에서 우리 노동조합은 조합원 한 분 한 분의 목소리를 모아 더 강한 연대와 실질적인 변화를 만들어가고 있습니다.
-            </p>
-            <p>
-                우리는 현장의 문제를 외면하지 않습니다.
-                직접 듣고, 함께 고민하고, 끝까지 해결하는 조직이 되겠습니다.
-                또한, 미래 세대의 노동 환경까지 책임지는 지속 가능한 노동 운동을 실현하겠습니다.
-            </p>
-            <p>
-                여러분의 참여와 연대가 곧 힘입니다.
-                혼자가 아닌 함께일 때 우리는 더욱 강해집니다.
-            </p>
-            <p class="font-bold text-blue-600">
-                앞으로도 경기남부본부는 조합원의 권익 보호와 공정한 노동 환경을 위해 가장 앞장서겠습니다.
-            </p>
-            <p class="text-right mt-10">
-                   한국노총 전국공공산업노동조합 경기남부본부장
-            </p>
+    <section id="message" class="py-24 px-6 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row gap-16 items-center">
+                <div class="md:w-1/2 relative">
+                    <div class="absolute -top-4 -left-4 w-24 h-24 bg-blue-100 rounded-full z-0 opacity-50 animate-pulse"></div>
+                    <div class="absolute -bottom-4 -right-4 w-32 h-32 bg-gray-100 rounded-full z-0 opacity-50 animate-pulse"></div>
+                    <div class="relative z-10 rounded-[2.5rem] overflow-hidden shadow-2xl transform transition hover:scale-[1.02] duration-500">
+                        <img src="본부장.jpg" alt="본부장 인사말" class="w-full h-auto object-cover">
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <span class="text-blue-600 font-bold tracking-widest uppercase mb-4 block">Greetings</span>
+                    <h2 class="text-4xl font-black mb-8 text-slate-800 leading-tight">본부장 인사말</h2>
+                    <div class="text-gray-600 leading-relaxed space-y-6 text-lg">
+                        <p>
+                            존경하는 조합원 여러분, 그리고 건설 현장에서 묵묵히 땀 흘리고 계신 모든 노동자 여러분께 깊은 인사를 드립니다.
+                        </p>
+                        <p>
+                            한국노총 전국공공산업노동조합 경기남부본부는 그동안 수많은 어려움 속에서도 노동자의 권익을 지키기 위해 쉼 없이 달려왔습니다.
+                            우리는 단순히 임금과 처우 개선을 넘어서, 노동자의 존엄성과 삶의 질을 지키는 것을 가장 중요한 가치로 삼고 있습니다.
+                        </p>
+                        <p>
+                            건설 현장은 여전히 위험과 불안정 속에 놓여 있으며, 부당한 대우와 불합리한 구조가 남아 있습니다.
+                            이러한 현실 속에서 우리 노동조합은 조합원 한 분 한 분의 목소리를 모아 더 강한 연대와 실질적인 변화를 만들어가고 있습니다.
+                        </p>
+                        <p>
+                            우리는 현장의 문제를 외면하지 않습니다. 직접 듣고, 함께 고민하고, 끝까지 해결하는 조직이 되겠습니다.
+                        </p>
+                        <p class="font-bold text-blue-600 text-xl border-l-4 border-blue-600 pl-4">
+                            앞으로도 경기남부본부는 조합원의 권익 보호와 공정한 노동 환경을 위해 가장 앞장서겠습니다.
+                        </p>
+                        <div class="pt-8 text-right">
+                             <p class="text-gray-500 text-sm mb-1">전국공공산업노동조합 건설산업분과</p>
+                             <p class="text-2xl font-black text-slate-800">경기남부본부장</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 <section id="organization" class="py-20 px-6 bg-gray-100">
     <div class="max-w-6xl mx-auto text-center">

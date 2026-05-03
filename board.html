@@ -78,6 +78,34 @@
         </div>
     </div>
 
+    <div id="view-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="view-modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeViewModal()"></div>
+            <div class="relative bg-white rounded-2xl overflow-hidden shadow-xl transform transition-all sm:max-w-2xl sm:w-full p-8">
+                <div class="flex justify-between items-start mb-6 border-b pb-4">
+                    <div>
+                        <h3 class="text-3xl font-bold text-slate-800" id="view-title">제목</h3>
+                        <div class="mt-2 text-sm text-slate-500 flex gap-4">
+                            <span><i class="fa-solid fa-user mr-1"></i> <span id="view-author">작성자</span></span>
+                            <span><i class="fa-solid fa-calendar mr-1"></i> <span id="view-date">날짜</span></span>
+                        </div>
+                    </div>
+                    <button onclick="closeViewModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="prose max-w-none text-slate-700 leading-relaxed whitespace-pre-wrap min-h-[200px]" id="view-content">
+                    내용이 여기에 표시됩니다.
+                </div>
+                <div class="mt-10 pt-6 border-t flex justify-end">
+                    <button onclick="closeViewModal()" class="px-8 py-3 bg-slate-900 text-white rounded-xl font-bold hover:shadow-lg transition">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <kflu-footer></kflu-footer>
     <kflu-auth-modals></kflu-auth-modals>
 
@@ -107,17 +135,44 @@
                     return;
                 }
 
-                let index = querySnapshot.size;
-                querySnapshot.forEach((docSnap) => {
+                const docs = querySnapshot.docs;
+                // 공지사항과 일반 게시글 분리
+                const notices = docs.filter(d => d.data().isNotice === true);
+                const regulars = docs.filter(d => d.data().isNotice !== true);
+
+                // 공지사항 먼저 렌더링
+                notices.forEach((docSnap) => {
+                    renderRow(docSnap, '공지', true);
+                });
+
+                // 일반 게시글 렌더링
+                let index = regulars.length;
+                regulars.forEach((docSnap) => {
+                    renderRow(docSnap, index--, false);
+                });
+
+                function renderRow(docSnap, displayIndex, isNotice) {
                     const data = docSnap.data();
                     const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : '-';
                     const isAuthor = currentUser && currentUser.uid === data.authorId;
 
                     const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-blue-50 transition cursor-pointer';
+                    tr.className = isNotice ? 'bg-blue-50/50 hover:bg-blue-100 transition cursor-pointer font-semibold' : 'hover:bg-blue-50 transition cursor-pointer';
+                    tr.onclick = (e) => {
+                        if (e.target.closest('button')) return;
+                        window.viewPost(docSnap.id);
+                    };
+                    
+                    const indexHtml = isNotice 
+                        ? `<span class="px-2 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-lg uppercase tracking-tighter">공지</span>`
+                        : displayIndex;
+
                     tr.innerHTML = `
-                        <td class="px-6 py-5 text-center text-slate-500">${index--}</td>
-                        <td class="px-6 py-5 font-bold text-slate-800">${data.title}</td>
+                        <td class="px-6 py-5 text-center text-slate-500">${indexHtml}</td>
+                        <td class="px-6 py-5 ${isNotice ? 'text-blue-900' : 'text-slate-800'} font-bold">
+                            ${isNotice ? `<i class="fa-solid fa-bullhorn mr-2 text-blue-500"></i>` : ''}
+                            ${data.title}
+                        </td>
                         <td class="px-6 py-5 text-center text-sm text-slate-500">${data.authorName || '익명'}</td>
                         <td class="px-6 py-5 text-center text-sm text-slate-400">${date}</td>
                         <td class="px-6 py-5 text-center">
@@ -128,12 +183,47 @@
                         </td>
                     `;
                     postList.appendChild(tr);
-                });
+                }
             } catch (error) {
                 console.error("Error loading posts: ", error);
-                postList.innerHTML = '<tr><td colspan="5" class="px-6 py-10 text-center text-red-400">데이터를 불러오는데 실패했습니다.</td></tr>';
+                if (!currentUser) {
+                    postList.innerHTML = '<tr><td colspan="5" class="px-6 py-10 text-center text-slate-400">로그인한 회원만 게시글을 볼 수 있습니다.</td></tr>';
+                } else {
+                    postList.innerHTML = '<tr><td colspan="5" class="px-6 py-10 text-center text-red-400">데이터를 불러오는데 실패했습니다.</td></tr>';
+                }
             }
         }
+
+        window.viewPost = async (id) => {
+            if (!currentUser) {
+                alert('로그인이 필요한 서비스입니다.');
+                if (window.openModal) window.openModal('login-modal');
+                return;
+            }
+            try {
+                const docSnap = await getDoc(doc(db, "posts", id));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('view-title').textContent = data.title;
+                    document.getElementById('view-author').textContent = data.authorName || '익명';
+                    document.getElementById('view-date').textContent = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : '-';
+                    document.getElementById('view-content').textContent = data.content;
+                    window.openViewModal();
+                }
+            } catch (error) {
+                alert('불러오기 실패: ' + error.message);
+            }
+        };
+
+        window.openViewModal = () => {
+            document.getElementById('view-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeViewModal = () => {
+            document.getElementById('view-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        };
 
         document.getElementById('write-btn').onclick = () => {
             if (!currentUser) {
