@@ -185,7 +185,7 @@
                     loadAllUsers();
                 } else {
                     spinner.classList.add('hidden');
-                    authStatus.innerHTML = `접근 권한이 없습니다.<br><span class="text-sm text-gray-500">현재 계정: ${user.email}</span><br><span class="text-blue-400 text-sm mt-2 block">관리자 계정(${ADMIN_EMAIL})으로 로그인해 주세요.</span>`;
+                    authStatus.innerHTML = `접근 권한이 없습니다.<br><span class="text-sm text-gray-500">현재 계정: ${user.email}</span><br><span class="text-blue-400 text-sm mt-2 block">관리자 계정으로 로그인해 주세요.</span>`;
                     authStatus.classList.add('text-red-400');
                     loginReq.classList.remove('hidden');
                 }
