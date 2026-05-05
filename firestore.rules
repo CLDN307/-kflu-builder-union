@@ -6,13 +6,15 @@ service cloud.firestore {
     function isAdmin() {
       // 인증된 상태이고, 이메일이 관리자 계정과 일치하는지 확인
       return request.auth != null && 
+             request.auth.token != null &&
+             request.auth.token.email != null &&
              request.auth.token.email.matches('(?i)admin@admin\\.com');
     }
 
     // 게시글 컬렉션 규칙
     match /posts/{postId} {
       // 모든 사용자는 게시글 목록과 상세 내용을 읽을 수 있습니다.
-      allow read: if request.auth != null;
+      allow read: if true;
       
       // 로그인한 사용자만 게시글을 작성할 수 있습니다.
       allow create: if request.auth != null;
@@ -28,10 +30,7 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
       
       // 관리자는 모든 회원 정보를 읽고 수정/삭제 가능
-      allow read, update, delete: if isAdmin();
-      
-      // 회원가입 시 신규 생성을 허용 (인증된 사용자에 한함)
-      allow create: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isAdmin();
     }
   }
 }

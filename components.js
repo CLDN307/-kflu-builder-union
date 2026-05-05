@@ -22,7 +22,7 @@ class KfluNavbar extends HTMLElement {
                     </div>
                     <div class="hidden md:flex gap-8 font-medium items-center">
                         <a href="${prefix}#home" class="hover:text-blue-400 transition">홈</a>
-                        <a href="${prefix}#about" class="hover:text-blue-400 transition">본부소개</a>
+                        <a href="${prefix}#message" class="hover:text-blue-400 transition">본부소개</a>
                         <a href="${prefix}#gallery" class="hover:text-blue-400 transition">활동현황</a>
                         <a href="board.html" class="hover:text-blue-400 transition">자유게시판</a>
                         <a href="${prefix}#contact" class="hover:text-blue-400 transition">오시는 길</a>
