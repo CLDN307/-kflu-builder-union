@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kflu-builder-union.pages.dev/sitemap.xml
