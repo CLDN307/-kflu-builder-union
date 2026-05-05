@@ -24,21 +24,26 @@ async function generateRSS() {
       ? new Date(data.createdAt._seconds * 1000)
       : new Date();
 
+    // Naver compliant format with guid and unique link
+    const itemLink = `${SITE_URL}/board.html?id=${doc.id}`;
     items += `
     <item>
       <title><![CDATA[${data.title}]]></title>
-      <link>${SITE_URL}/board.html?id=${doc.id}</link>
+      <link>${itemLink}</link>
       <description><![CDATA[${data.content}]]></description>
+      <guid isPermaLink="true">${itemLink}</guid>
       <pubDate>${date.toUTCString()}</pubDate>
     </item>`;
   });
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
 <title>경기남부본부 활동 게시판</title>
 <link>${SITE_URL}</link>
 <description>최신 게시글 자동 업데이트</description>
+<language>ko</language>
+<atom:link href="${SITE_URL}/rss.xml" rel="self" type="application/rss+xml" />
 
 ${items}
 
