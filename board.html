@@ -279,7 +279,13 @@
                 alert('저장 실패: ' + error.message);
             }
         };
+           // 🔥 URL로 직접 게시글 열기
+           const urlParams = new URLSearchParams(window.location.search);
+           const postId = urlParams.get('id');
 
+           if (postId) {
+               viewPost(postId);
+           }
         window.editPost = async (id) => {
             try {
                 const docSnap = await getDoc(doc(db, "posts", id));
