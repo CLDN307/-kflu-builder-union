@@ -124,15 +124,12 @@
 
         function formatDate(timestamp) {
             if (!timestamp) return '-';
-            // Firestore Timestamp 처리
             if (timestamp.seconds) {
                 return new Date(timestamp.seconds * 1000).toLocaleDateString();
             }
-            // JS Date 객체 처리
             if (timestamp instanceof Date) {
                 return timestamp.toLocaleDateString();
             }
-            // 기타 (문자열 등)
             return new Date(timestamp).toLocaleDateString();
         }
 
@@ -150,16 +147,13 @@
                 }
 
                 const docs = querySnapshot.docs;
-                // 공지사항과 일반 게시글 분리
                 const notices = docs.filter(d => d.data().isNotice === true);
                 const regulars = docs.filter(d => d.data().isNotice !== true);
 
-                // 공지사항 먼저 렌더링
                 notices.forEach((docSnap) => {
                     renderRow(docSnap, '공지', true);
                 });
 
-                // 일반 게시글 렌더링
                 let index = regulars.length;
                 regulars.forEach((docSnap) => {
                     renderRow(docSnap, index--, false);
@@ -200,7 +194,7 @@
                 }
             } catch (error) {
                 console.error("Error loading posts: ", error);
-                postList.innerHTML = '<tr><td colspan="5" class="px-6 py-10 text-center text-red-400">데이터를 불러오는데 실패했습니다.</td></tr>';
+                postList.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-red-400">데이터를 불러오는데 실패했습니다.<br><span class="text-xs opacity-70">${error.message}</span></td></tr>`;
             }
         }
 
