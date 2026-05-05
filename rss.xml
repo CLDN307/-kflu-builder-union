@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+
+    <title>한국노총 전국공공산업노동조합 경기남부본부</title>
+    <link>https://kflu-builder-union.pages.dev</link>
+    <description>건설노동자의 권익 보호와 고용 안정을 위한 공식 홈페이지</description>
+    <language>ko</language>
+
+    <!-- 메인 -->
+    <item>
+      <title>경기남부본부 공식 홈페이지 오픈</title>
+      <link>https://kflu-builder-union.pages.dev/</link>
+      <description>한국노총 전국공공산업노동조합 경기남부본부 공식 홈페이지입니다.</description>
+      <pubDate>Mon, 05 May 2026 09:00:00 +0900</pubDate>
+    </item>
+
+    <!-- 인사말 -->
+    <item>
+      <title>본부장 인사말</title>
+      <link>https://kflu-builder-union.pages.dev/#message</link>
+      <description>건설노동자의 권익 보호와 조직 강화를 위한 본부장 인사말</description>
+      <pubDate>Mon, 05 May 2026 09:10:00 +0900</pubDate>
+    </item>
+
+    <!-- 조직도 -->
+    <item>
+      <title>조직 구성 안내</title>
+      <link>https://kflu-builder-union.pages.dev/#organization</link>
+      <description>경기남부본부 조직 구성 및 역할 안내</description>
+      <pubDate>Mon, 05 May 2026 09:20:00 +0900</pubDate>
+    </item>
+
+    <!-- 활동 -->
+    <item>
+      <title>주요 활동 및 투쟁 현황</title>
+      <link>https://kflu-builder-union.pages.dev/#gallery</link>
+      <description>현장 권익 사수와 조직 활동 현황</description>
+      <pubDate>Mon, 05 May 2026 09:30:00 +0900</pubDate>
+    </item>
+
+    <!-- 상담 -->
+    <item>
+      <title>상담 및 가입 안내</title>
+      <link>https://kflu-builder-union.pages.dev/#contact</link>
+      <description>노동 상담 및 조합 가입 신청 안내</description>
+      <pubDate>Mon, 05 May 2026 09:40:00 +0900</pubDate>
+    </item>
+
+  </channel>
+</rss>
