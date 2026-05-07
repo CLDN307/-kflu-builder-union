@@ -172,7 +172,6 @@
 
             if (user) {
                 const userEmail = (user.email || "").toLowerCase().trim();
-                console.log("Current user email:", userEmail);
                 
                 if (userEmail === ADMIN_EMAIL) {
                     currentAdmin = user;

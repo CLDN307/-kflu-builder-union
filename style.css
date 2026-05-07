@@ -1,5 +1,6 @@
 
 /* Modern CSS (Baseline) for KFLU Builder Union */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
 
 @layer base, theme, components, utilities;
 
@@ -27,35 +28,10 @@
 }
 
 @layer components {
-    .hero-gradient {
-        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('대문.jpg');
-        background-size: cover;
-        background-position: center;
-    }
-
-    /* Web Component Styles (if needed globally) */
-    kflu-navbar nav.nav-scrolled {
-        background-color: white !important;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        color: #111827 !important;
-    }
-
     /* Interactive Elements glow effect as per GEMINI.md */
     button:not(.bg-transparent):hover {
         box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
         transform: translateY(-1px);
         transition: all 0.2s ease;
-    }
-
-    /* Cards with deep shadows as per GEMINI.md */
-    .card-lifted {
-        background: white;
-        border-radius: 1rem;
-        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        transition: transform 0.3s ease;
-    }
-
-    .card-lifted:hover {
-        transform: translateY(-5px);
     }
 }
