@@ -3,12 +3,12 @@
 ## Overview
 이 프로젝트는 **한국노총 전국공공산업노동조합 건설산업분과 경기남부본부**의 공식 웹사이트입니다. 조합원들에게 활동 소식을 전하고, 상담 신청 및 커뮤니티 공간(게시판)을 제공하는 것을 목적으로 합니다.
 
-## Current State & Features (V2.8)
+## Current State & Features (V2.9)
+- **Firebase & GitHub Actions Integration:**
+    - GitHub Actions 워크플로우를 통한 RSS 자동 업데이트 보안 강화.
+    - `FIREBASE_SERVICE_ACCOUNT` 시크릿을 이용한 Firestore 접근 설정.
+    - `generate-rss.js` 에러 핸들링 및 초기화 로직 개선.
 - **Code Optimization & Cleanup:**
-    - 미사용 CSS 클래스 제거 및 공통 폰트 설정 통합 (`style.css`).
-    - JavaScript 미사용 임포트(`where`) 및 디버그 로그 제거.
-    - RSS 생성 스크립트 파일명 정리 (`generate-rss.js`) 및 워크플로우 동기화.
-- **Web Components Architecture:**
 ...
 ## Technology Stack (Completed)
 - **Frontend:** HTML5, Tailwind CSS, JavaScript (ES Modules), Web Components.
