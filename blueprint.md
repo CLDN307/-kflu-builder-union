@@ -3,8 +3,11 @@
 ## Overview
 이 프로젝트는 **한국노총 전국공공산업노동조합 건설산업분과 경기남부본부**의 공식 웹사이트입니다. 조합원들에게 활동 소식을 전하고, 상담 신청 및 커뮤니티 공간(게시판)을 제공하는 것을 목적으로 합니다.
 
-## Current State & Features (V3.0)
-- **Image Update & Optimization:**
+## Current State & Features (V3.1)
+- **Representative Image Update:**
+    - `본부장.jpg` 최신 고해상도 이미지로 교체 및 적용 완료.
+    - 메인 페이지(`index.html`)의 본부장 인사말 섹션 이미지 반영 확인.
+- **Image Update & Optimization (V3.0):**
     - `성남시장후보지지단체사진.jpg` 최신화 및 적용 완료.
     - 기존 레이아웃 및 기능을 유지하며 활동 사진 업데이트 반영.
 - **Firebase & GitHub Actions Integration:**
